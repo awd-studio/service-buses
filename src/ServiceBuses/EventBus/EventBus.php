@@ -33,7 +33,11 @@ final class EventBus implements EventBusInterface
      */
     public function subscribe(string $eventSubscriber, string $event): EventBusInterface
     {
-        $this->subscribers[$event][] = $eventSubscriber;
+        $subscribers = $this->subscribers[$event] ?? [];
+        if (!\in_array($eventSubscriber, $subscribers)) {
+            $subscribers[] = $eventSubscriber;
+        }
+        $this->subscribers[$event] = $subscribers;
 
         return $this;
     }
