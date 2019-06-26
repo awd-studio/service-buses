@@ -4,11 +4,8 @@ includes:
 parameters:
 	ignoreErrors:
 		-
+			message: '#.does\s+not\s+accept\s+PHPUnit\\Framework\\MockObject\\MockObject#'
+			path: %currentWorkingDirectory%/tests/*
+		-
 			message: '#.\MockObject\s+given#'
 			path: %currentWorkingDirectory%/tests/*
-		-
-			message: '#expects\s+callable\(\)\:\s+mixed#'
-			path: %currentWorkingDirectory%/tests/*
-		-
-			message: '#Function\s+#'
-			path: %currentWorkingDirectory%/tests/DI/Module/Services/common.php*

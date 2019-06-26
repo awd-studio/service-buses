@@ -1,6 +1,6 @@
 # Service buses in PHP
 
-##A simple library, to implement CQRS pattern with PHP projects.
+## A simple library, to implement CQRS pattern with PHP projects.
 
 #### Advantages:
 - Provides such kind of service-buses as: `Command Bus`, `Query Bus` and `Event Bus`, for the CQRS pattern implementing.
