@@ -226,16 +226,16 @@ $eventBus->dispatch($event);
 /** @var \Psr\Container\ContainerInterface $container */
 $container = ... // Your DI-container which contains the handler
 
-$serviceBus = new \AwdStudio\ServiceBuses\ServiceBus($container);
+$serviceBuses = new \AwdStudio\ServiceBuses\ServiceBusesFactory($container);
 
 // Get the Command Bus instance;
-$commandBus = $serviceBus->commandBus(/* A list of command handlers */ []);
+$commandBus = $serviceBuses->commandBus(/* A list of command handlers */ []);
 
 // Get the Query Bus instance;
-$queryBus = $serviceBus->queryBus(/* A list of query handlers */ []);
+$queryBus = $serviceBuses->queryBus(/* A list of query handlers */ []);
 
 // Get the Event Bus instance;
-$eventBus = $serviceBus->eventBus(/* A list of event subscribers */ []);
+$eventBus = $serviceBuses->eventBus(/* A list of event subscribers */ []);
 ```
 
 -----
