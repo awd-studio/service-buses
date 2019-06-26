@@ -1,0 +1,41 @@
+{
+    "name": "awd-studio/service-buses",
+    "description": "An implementation of such kind of patterns as: Command Bus, Query Bus and Event Bus; in a single package; driven by a Dependency Injection Container",
+    "type": "library",
+    "require": {
+        "php": ">=7.1",
+        "psr/container": "^1.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8.1",
+        "phpunit/php-code-coverage": "^7.0",
+        "dg/bypass-finals": "^1.1",
+        "phpstan/phpstan": "^0.11.8",
+        "phpstan/phpstan-phpunit": "^0.11.2",
+        "php-coveralls/php-coveralls": "^2.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "AwdStudio\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "AwdStudio\\Tests\\": "tests"
+        }
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Anton Karpov",
+            "email": "awd.com.ua@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "scripts":
+    {
+        "test": [ "@stan", "@unit" ],
+        "stan": "phpstan analyse --level=7 --configuration=phpstan.neon src tests",
+        "unit": "phpunit -c phpunit.xml.dist"
+    }
+}

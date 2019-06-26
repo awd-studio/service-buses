@@ -1,0 +1,27 @@
+language: php
+
+php:
+    - 7.2
+    - 7.3
+
+sudo: false
+
+before_script:
+    - curl --version
+    - composer self-update
+    - composer install --no-interaction --prefer-source
+
+script:
+    - mkdir -p build/logs
+    - php vendor/bin/phpstan analyse --level=7 --configuration=phpstan.neon src tests
+    - php vendor/bin/phpunit -c phpunit.xml.dist
+
+matrix:
+    fast_finish: true
+
+notifications:
+    on_success: never
+    on_failure: always
+
+after_success:
+    - travis_retry php vendor/bin/php-coveralls -v
