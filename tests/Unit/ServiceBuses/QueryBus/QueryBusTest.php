@@ -58,7 +58,7 @@ class QueryBusTest extends TestCase
     /**
      * @covers ::subscribe
      * @covers ::handle
-     * @covers ::resolveHandlerNameByQuery
+     * @covers ::resolveHandler
      * @covers ::validateHandler
      */
     public function testSubscribeHandle()
@@ -90,7 +90,7 @@ class QueryBusTest extends TestCase
 
     /**
      * @covers ::handle
-     * @covers ::resolveHandlerNameByQuery
+     * @covers ::resolveHandler
      */
     public function testHandleWrongCommand()
     {
@@ -101,7 +101,7 @@ class QueryBusTest extends TestCase
 
     /**
      * @covers ::handle
-     * @covers ::resolveHandlerNameByQuery
+     * @covers ::resolveHandler
      * @covers ::validateHandler
      */
     public function testHandleWrongHandler()

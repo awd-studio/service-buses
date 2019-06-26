@@ -44,7 +44,7 @@ final class CommandBus implements CommandBusInterface
      */
     public function handle($command): void
     {
-        $id = $this->resolveHandlerNameByCommand($command);
+        $id = $this->resolveHandler($command);
         $handler = $this->container->get($id);
         $this->validateHandler($handler);
         $handler->handle($command);
@@ -58,7 +58,7 @@ final class CommandBus implements CommandBusInterface
      * @return string
      * @throws \AwdStudio\ServiceBuses\CommandBus\Exception\CommandHandlerNotDefined
      */
-    private function resolveHandlerNameByCommand($command): string
+    private function resolveHandler($command): string
     {
         $commandClass = \get_class($command);
         $handlerClass = $this->handlers[$commandClass] ?? null;

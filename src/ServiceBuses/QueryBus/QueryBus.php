@@ -44,7 +44,7 @@ final class QueryBus implements QueryBusInterface
      */
     public function handle($query)
     {
-        $id = $this->resolveHandlerNameByQuery($query);
+        $id = $this->resolveHandler($query);
         $handler = $this->container->get($id);
         $this->validateHandler($handler);
 
@@ -59,7 +59,7 @@ final class QueryBus implements QueryBusInterface
      * @return string
      * @throws \AwdStudio\ServiceBuses\QueryBus\Exception\QueryHandlerNotDefined
      */
-    private function resolveHandlerNameByQuery($query): string
+    private function resolveHandler($query): string
     {
         $queryClass = \get_class($query);
         $handlerClass = $this->handlers[$queryClass] ?? null;

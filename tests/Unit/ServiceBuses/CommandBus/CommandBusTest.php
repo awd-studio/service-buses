@@ -58,7 +58,7 @@ class CommandBusTest extends TestCase
     /**
      * @covers ::subscribe
      * @covers ::handle
-     * @covers ::resolveHandlerNameByCommand
+     * @covers ::resolveHandler
      * @covers ::validateHandler
      */
     public function testSubscribeHandle()
@@ -93,7 +93,7 @@ class CommandBusTest extends TestCase
 
     /**
      * @covers ::handle
-     * @covers ::resolveHandlerNameByCommand
+     * @covers ::resolveHandler
      */
     public function testHandleWrongCommand()
     {
@@ -105,7 +105,7 @@ class CommandBusTest extends TestCase
     /**
      * @covers ::subscribe
      * @covers ::handle
-     * @covers ::resolveHandlerNameByCommand
+     * @covers ::resolveHandler
      * @covers ::validateHandler
      */
     public function testHandleWrongHandler()
