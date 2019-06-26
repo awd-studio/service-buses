@@ -178,7 +178,7 @@ class MyEventSubscriber
     // This method must be implemented by each command, 
     // otherwise, there will be thrown an exception.
     // The event to handle will be sent as an argument.
-    public function dispatch(MyEvent $event): void
+    public function notify(MyEvent $event): void
     {
         $foo = $event->foo;
         $bar = $event->bar;
@@ -189,7 +189,7 @@ class MyEventSubscriber
 // Example Event subscriber
 class MyAnotherEventSubscriber
 { 
-    public function dispatch(MyEvent $event): void
+    public function notify(MyEvent $event): void
     {
         $foo = $event->foo;
         $bar = $event->bar;
