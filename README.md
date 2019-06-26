@@ -2,6 +2,9 @@
 
 ## A simple library, to implement CQRS pattern with PHP projects.
 
+[![Build Status](https://travis-ci.org/awd-studio/service-buses.svg?branch=master)](https://travis-ci.org/awd-studio/service-buses)
+[![Coverage Status](https://coveralls.io/repos/github/awd-studio/service-buses/badge.svg?branch=master)](https://coveralls.io/github/awd-studio/service-buses?branch=master)
+
 #### Advantages:
 - Provides such kind of service-buses as: `Command Bus`, `Query Bus` and `Event Bus`, for the CQRS pattern implementing.
 - In a single package.
