@@ -1,24 +1,24 @@
 <?php
 
-namespace AwdStudio\Tests\Unit\ServiceBuses\CommandBus;
+namespace AwdStudio\Tests\Unit\ServiceBuses\QueryBus;
 
-use AwdStudio\ServiceBuses\CommandBus\CommandBus;
-use AwdStudio\ServiceBuses\CommandBus\CommandBusInterface;
-use AwdStudio\ServiceBuses\CommandBus\Exception\CommandHandlerIsInappropriate;
-use AwdStudio\ServiceBuses\CommandBus\Exception\CommandHandlerNotDefined;
+use AwdStudio\ServiceBuses\QueryBus\Exception\QueryHandlerIsNotAppropriate;
+use AwdStudio\ServiceBuses\QueryBus\Exception\QueryHandlerNotDefined;
+use AwdStudio\ServiceBuses\QueryBus\QueryBus;
+use AwdStudio\ServiceBuses\QueryBus\QueryBusInterface;
 use AwdStudio\Tests\Mock\MockDIContainer;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @coversDefaultClass \AwdStudio\ServiceBuses\CommandBus\CommandBus
+ * @coversDefaultClass \AwdStudio\ServiceBuses\QueryBus\QueryBus
  */
-class CommandBusTest extends TestCase
+class QueryBusTest extends TestCase
 {
 
     /**
      * Instance.
      *
-     * @var \AwdStudio\ServiceBuses\CommandBus\CommandBus
+     * @var \AwdStudio\ServiceBuses\QueryBus\QueryBusInterface
      */
     private $instance;
 
@@ -34,7 +34,7 @@ class CommandBusTest extends TestCase
         parent::setUp();
 
         $this->container = MockDIContainer::getMock($this);
-        $this->instance = new CommandBus($this->container);
+        $this->instance = new QueryBus($this->container);
     }
 
     /**
@@ -42,7 +42,7 @@ class CommandBusTest extends TestCase
      */
     public function testCommandBusInstance()
     {
-        $this->assertInstanceOf(CommandBusInterface::class, $this->instance);
+        $this->assertInstanceOf(QueryBusInterface::class, $this->instance);
     }
 
     /**
@@ -50,15 +50,15 @@ class CommandBusTest extends TestCase
      */
     public function testSubscribe()
     {
-        $instance = $this->instance->subscribe(\get_class(new class {}), \stdClass::class);
+        $instance = $this->instance->subscribe(\get_class(new class{}), \stdClass::class);
 
-        $this->assertInstanceOf(CommandBusInterface::class, $instance);
+        $this->assertInstanceOf(QueryBusInterface::class, $instance);
     }
 
     /**
      * @covers ::subscribe
      * @covers ::handle
-     * @covers ::resolveHandlerNameByCommand
+     * @covers ::resolveHandlerNameByQuery
      * @covers ::validateHandler
      */
     public function testSubscribeHandle()
@@ -66,13 +66,10 @@ class CommandBusTest extends TestCase
         // Sample handler
         $handler = new class
         {
-            // We will check this state after handling
-            public $state = null;
-
             // Required method
-            public function handle(\stdClass $command): void
+            public function fetch(\stdClass $query)
             {
-                $this->state = $command;
+                return 42;
             }
         };
 
@@ -86,31 +83,30 @@ class CommandBusTest extends TestCase
             ->willReturn($handler);
 
         // Executing
-        $this->instance->handle(new \stdClass());
+        $result = $this->instance->handle(new \stdClass());
 
-        $this->assertInstanceOf(\stdClass::class, $handler->state);
+        $this->assertSame(42, $result);
     }
 
     /**
      * @covers ::handle
-     * @covers ::resolveHandlerNameByCommand
+     * @covers ::resolveHandlerNameByQuery
      */
     public function testHandleWrongCommand()
     {
-        $this->expectException(CommandHandlerNotDefined::class);
+        $this->expectException(QueryHandlerNotDefined::class);
 
         $this->instance->handle(new \stdClass());
     }
 
     /**
-     * @covers ::subscribe
      * @covers ::handle
-     * @covers ::resolveHandlerNameByCommand
+     * @covers ::resolveHandlerNameByQuery
      * @covers ::validateHandler
      */
     public function testHandleWrongHandler()
     {
-        $this->expectException(CommandHandlerIsInappropriate::class);
+        $this->expectException(QueryHandlerIsNotAppropriate::class);
 
         // Prepare a sample handler
         $handler = new class {};

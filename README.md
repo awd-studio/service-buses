@@ -119,7 +119,7 @@ class MyQueryHandler
     // otherwise, there will be thrown an exception.
     // The query to handle will be sent as an argument.
     // It must return the result of a query execution.
-    public function dispatch(MyQuery $query): ?MyEntity
+    public function fetch(MyQuery $query): ?MyEntity
     {
         $foo = $query->foo;
         $bar = $query->bar;
