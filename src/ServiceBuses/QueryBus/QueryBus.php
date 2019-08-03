@@ -46,9 +46,9 @@ final class QueryBus implements QueryBusInterface
     {
         $id = $this->resolveHandler($query);
         $handler = $this->container->get($id);
-        $this->validateHandler($handler);
+        $handlingMethod = $this->resolveHandlingMethod($handler);
 
-        return $handler->fetch($query);
+        return $handler->{$handlingMethod}($query);
     }
 
     /**
@@ -73,20 +73,32 @@ final class QueryBus implements QueryBusInterface
     }
 
     /**
-     * Checks if the handler contains a required method to execute handling.
+     * Checks if the handler contains a required method to execute handling and returns it's name.
      *
      * @param object $handler A handler to check.
      *
+     * @return string The name of the handling method.
+     *
      * @throws \AwdStudio\ServiceBuses\QueryBus\Exception\QueryHandlerIsNotAppropriate
      */
-    private function validateHandler($handler): void
+    private function resolveHandlingMethod($handler): string
     {
-        if (!\method_exists($handler, 'fetch')) {
-            throw new QueryHandlerIsNotAppropriate(\sprintf(
-                'The handler "%s" does not contains a required method "fetch"',
-                \get_class($handler)
-            ));
+        if (\method_exists($handler, '__invoke')) {
+            return '__invoke';
         }
+
+        if (\method_exists($handler, 'handle')) {
+            return 'handle';
+        }
+
+        if (\method_exists($handler, 'fetch')) {
+            return 'fetch';
+        }
+
+        throw new QueryHandlerIsNotAppropriate(\sprintf(
+            'The handler "%s" must contain one of required methods: "__invoke", "handle" or "fetch"',
+            \get_class($handler)
+        ));
     }
 
 }

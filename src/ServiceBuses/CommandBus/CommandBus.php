@@ -72,7 +72,7 @@ final class CommandBus implements CommandBusInterface
     }
 
     /**
-     * Checks if the handler contains a required method to execute handling.
+     * Checks if the handler contains a required method to execute handling and returns it's name.
      *
      * @param object $handler A handler to check.
      *
