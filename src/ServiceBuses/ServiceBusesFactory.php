@@ -11,6 +11,7 @@ use AwdStudio\ServiceBuses\EventBus\EventBusInterface;
 use AwdStudio\ServiceBuses\QueryBus\QueryBus;
 use AwdStudio\ServiceBuses\QueryBus\QueryBusInterface;
 
+/** @psalm-suppress PropertyNotSetInConstructor */
 final class ServiceBusesFactory
 {
 
@@ -39,13 +40,13 @@ final class ServiceBusesFactory
     /**
      * Creates an instance of a command-bus.
      *
-     * @param array $handlers A list of handlers with commands as keys.
+     * @param array<string, string> $handlers A list of handlers with commands as keys.
      *
      * @return \AwdStudio\ServiceBuses\CommandBus\CommandBusInterface
      */
     public function commandBus(array $handlers = []): CommandBusInterface
     {
-        if (null === $this->_commandBus) {
+        if (!isset($this->_commandBus)) {
             $this->_commandBus = new CommandBus($this->container, $handlers);
         }
 
@@ -55,13 +56,13 @@ final class ServiceBusesFactory
     /**
      * Creates an instance of an event-bus.
      *
-     * @param array $handlers A list of handlers with commands as keys.
+     * @param array<string, array<string, string>> $handlers A list of handlers with commands as keys.
      *
      * @return \AwdStudio\ServiceBuses\EventBus\EventBusInterface
      */
     public function eventBus(array $handlers = []): EventBusInterface
     {
-        if (null === $this->_eventBus) {
+        if (!isset($this->_eventBus)) {
             $this->_eventBus = new EventBus($this->container, $handlers);
         }
 
@@ -71,13 +72,13 @@ final class ServiceBusesFactory
     /**
      * Creates an instance of a query-bus.
      *
-     * @param array $subscribers A list of handlers with commands as keys.
+     * @param array<string, string> $subscribers A list of handlers with commands as keys.
      *
      * @return \AwdStudio\ServiceBuses\QueryBus\QueryBusInterface
      */
     public function queryBus(array $subscribers = []): QueryBusInterface
     {
-        if (null === $this->_queryBus) {
+        if (!isset($this->_queryBus)) {
             $this->_queryBus = new QueryBus($this->container, $subscribers);
         }
 
