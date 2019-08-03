@@ -126,7 +126,7 @@ class MyQueryHandler
     
     // The bus looks if the handler is invokable and calls the
     // "__invoke" method if it exists. Also, it can look for 
-    // the method "fetch" and calls it.
+    // the methods "fetch" or "handle" and calls them.
     // 
     // Otherwise, if those methods aren't exists - 
     // the exception will be thrown.
@@ -192,7 +192,7 @@ class MyEventSubscriber
     
     // The bus looks if the handler is invokable and calls the
     // "__invoke" method if it exists. Also, it can look for 
-    // the method "notify" and calls it.
+    // the methods "notify" or "handle" and calls them.
     // 
     // Otherwise, if those methods aren't exists - 
     // the exception will be thrown.

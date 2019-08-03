@@ -58,9 +58,9 @@ class EventBusTest extends TestCase
      * @covers ::subscribe
      * @covers ::dispatch
      * @covers ::resolveSubscribers
-     * @covers ::validateHandler
+     * @covers ::resolveHandlingMethod
      */
-    public function testSubscribeHandle()
+    public function testSubscribeAndHandle()
     {
         // Sample subscriber
         $subscriber1 = new class
@@ -69,7 +69,7 @@ class EventBusTest extends TestCase
             public $state = null;
 
             // Required method
-            public function notify(\stdClass $event): void
+            public function __invoke(\stdClass $event): void
             {
                 $this->state = 'Subscriber 1 is notified';
             }
@@ -88,9 +88,36 @@ class EventBusTest extends TestCase
             }
         };
 
+        // Sample subscriber
+        $subscriber2 = new class
+        {
+            // We will check this state after handling
+            public $state = null;
+
+            // Required method
+            public function handle(\stdClass $event): void
+            {
+                $this->state = 'Subscriber 2 is notified';
+            }
+        };
+
+        // Sample subscriber
+        $subscriber3 = new class
+        {
+            // We will check this state after handling
+            public $state = null;
+
+            // Required method
+            public function notify(\stdClass $event): void
+            {
+                $this->state = 'Subscriber 3 is notified';
+            }
+        };
+
         // Subscribe subscribers to a sample command
         $this->instance->subscribe(\get_class($subscriber1), \stdClass::class);
         $this->instance->subscribe(\get_class($subscriber2), \stdClass::class);
+        $this->instance->subscribe(\get_class($subscriber3), \stdClass::class);
 
         // Feed subscribers with a DI-container to the Bus
         $this->container
@@ -101,19 +128,24 @@ class EventBusTest extends TestCase
             ->expects($this->at(1))
             ->method('get')
             ->willReturn($subscriber2);
+        $this->container
+            ->expects($this->at(2))
+            ->method('get')
+            ->willReturn($subscriber3);
 
         // Executing
         $this->instance->dispatch(new \stdClass());
 
         $this->assertSame('Subscriber 1 is notified', $subscriber1->state);
         $this->assertSame('Subscriber 2 is notified', $subscriber2->state);
+        $this->assertSame('Subscriber 3 is notified', $subscriber3->state);
     }
 
     /**
      * @covers ::subscribe
      * @covers ::dispatch
      * @covers ::resolveSubscribers
-     * @covers ::validateHandler
+     * @covers ::resolveHandlingMethod
      */
     public function testHandleWrongHandler()
     {
