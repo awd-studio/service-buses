@@ -58,10 +58,45 @@ class CommandBusTest extends TestCase
     /**
      * @covers ::subscribe
      * @covers ::handle
-     * @covers ::resolveHandler
-     * @covers ::validateHandler
+     * @covers ::resolveHandlerId
+     * @covers ::resolveHandlingMethod
      */
-    public function testSubscribeHandle()
+    public function testSubscribeAndInvoke()
+    {
+        // Sample handler
+        $handler = new class
+        {
+            // We will check this state after handling
+            public $state = null;
+
+            // Required method
+            public function __invoke(\stdClass $command): void
+            {
+                $this->state = $command;
+            }
+        };
+
+        // Subscribe a handler to a sample command
+        $this->instance->subscribe(\get_class($handler), \stdClass::class);
+
+        // Feed a handler with a DI-container to the Bus
+        $this->container
+            ->expects($this->any())
+            ->method('get')
+            ->willReturn($handler);
+
+        // Executing
+        $this->instance->handle(new \stdClass());
+        $this->assertInstanceOf(\stdClass::class, $handler->state);
+    }
+
+    /**
+     * @covers ::subscribe
+     * @covers ::handle
+     * @covers ::resolveHandlerId
+     * @covers ::resolveHandlingMethod
+     */
+    public function testSubscribeAndHandle()
     {
         // Sample handler
         $handler = new class
@@ -87,13 +122,13 @@ class CommandBusTest extends TestCase
 
         // Executing
         $this->instance->handle(new \stdClass());
-
         $this->assertInstanceOf(\stdClass::class, $handler->state);
     }
 
     /**
      * @covers ::handle
-     * @covers ::resolveHandler
+     * @covers ::resolveHandlerId
+     * @covers ::resolveHandlingMethod
      */
     public function testHandleWrongCommand()
     {
@@ -105,8 +140,8 @@ class CommandBusTest extends TestCase
     /**
      * @covers ::subscribe
      * @covers ::handle
-     * @covers ::resolveHandler
-     * @covers ::validateHandler
+     * @covers ::resolveHandlerId
+     * @covers ::resolveHandlingMethod
      */
     public function testHandleWrongHandler()
     {

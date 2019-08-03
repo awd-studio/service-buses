@@ -44,10 +44,10 @@ final class CommandBus implements CommandBusInterface
      */
     public function handle($command): void
     {
-        $id = $this->resolveHandler($command);
-        $handler = $this->container->get($id);
-        $this->validateHandler($handler);
-        $handler->handle($command);
+        $handlerId = $this->resolveHandlerId($command);
+        $handler = $this->container->get($handlerId);
+        $handlerMethod = $this->resolveHandlingMethod($handler);
+        $handler->{$handlerMethod}($command);
     }
 
     /**
@@ -58,7 +58,7 @@ final class CommandBus implements CommandBusInterface
      * @return string
      * @throws \AwdStudio\ServiceBuses\CommandBus\Exception\CommandHandlerNotDefined
      */
-    private function resolveHandler($command): string
+    private function resolveHandlerId($command): string
     {
         $commandClass = \get_class($command);
         $handlerClass = $this->handlers[$commandClass] ?? null;
@@ -76,16 +76,24 @@ final class CommandBus implements CommandBusInterface
      *
      * @param object $handler A handler to check.
      *
+     * @return string The name of a handling method.
+     *
      * @throws \AwdStudio\ServiceBuses\CommandBus\Exception\CommandHandlerIsInappropriate
      */
-    private function validateHandler($handler): void
+    private function resolveHandlingMethod($handler): string
     {
-        if (!\method_exists($handler, 'handle')) {
-            throw new CommandHandlerIsInappropriate(\sprintf(
-                'The handler "%s" does not contains a required method "handle"',
-                \get_class($handler)
-            ));
+        if (\method_exists($handler, '__invoke')) {
+            return '__invoke';
         }
+
+        if (\method_exists($handler, 'handle')) {
+            return 'handle';
+        }
+
+        throw new CommandHandlerIsInappropriate(\sprintf(
+            'The handler "%s" must be invokable, or contain a required method "handle"',
+            \get_class($handler)
+        ));
     }
 
 }
