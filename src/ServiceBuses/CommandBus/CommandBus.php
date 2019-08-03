@@ -21,7 +21,7 @@ final class CommandBus implements CommandBusInterface
      * CommandBus constructor.
      *
      * @param \Psr\Container\ContainerInterface $container DI container to manage handlers.
-     * @param array                             $handlers  A list of current handlers for commands defined as keys.
+     * @param array<string, string>             $handlers  A list of current handlers for commands defined as keys.
      */
     public function __construct(ContainerInterface $container, array $handlers = [])
     {

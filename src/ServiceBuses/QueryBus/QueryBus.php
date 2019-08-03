@@ -21,7 +21,7 @@ final class QueryBus implements QueryBusInterface
      * QueryBus constructor.
      *
      * @param \Psr\Container\ContainerInterface $container DI container to manage handlers.
-     * @param array                             $handlers  A list of current handlers for queries defined as keys.
+     * @param array<string, string>             $handlers  A list of current handlers for queries defined as keys.
      */
     public function __construct(ContainerInterface $container, array $handlers = [])
     {

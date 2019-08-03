@@ -19,8 +19,8 @@ final class EventBus implements EventBusInterface
     /**
      * EventBus constructor.
      *
-     * @param \Psr\Container\ContainerInterface $container DI container to manage handlers.
-     * @param array                             $handlers  A list of current handlers for commands defined as keys.
+     * @param \Psr\Container\ContainerInterface    $container DI container to manage handlers.
+     * @param array<string, array<string, string>> $handlers  A list of current handlers for commands defined as keys.
      */
     public function __construct(ContainerInterface $container, array $handlers = [])
     {
