@@ -58,12 +58,18 @@ class MyCommandHandler
         $this->anotherDependency = $anotherDependency;
     }
     
-    // This method must be implemented by each command, 
-    // otherwise, there will be thrown an exception.
+    // The bus looks if the handler is invokable and calls the
+    // "__invoke" method if it exists. Also, it can look for 
+    // the method "handle" and calls it.
+    // 
+    // Otherwise, if those methods aren't exists - 
+    // the exception will be thrown.
+    // 
     // The command to handle will be sent as an argument.
+    //
     // According to a canonical implementation of a command
     // pattern, handlers shouldn't have return statement. 
-    public function handle(MyCommand $command): void
+    public function __invoke(MyCommand $command): void
     {
         $foo = $command->foo;
         $bar = $command->bar;
@@ -118,11 +124,17 @@ class MyQueryHandler
         $this->anotherDependency = $anotherDependency;
     }
     
-    // This method must be implemented by each command, 
-    // otherwise, there will be thrown an exception.
+    // The bus looks if the handler is invokable and calls the
+    // "__invoke" method if it exists. Also, it can look for 
+    // the methods "fetch" or "handle" and calls them.
+    // 
+    // Otherwise, if those methods aren't exists - 
+    // the exception will be thrown.
+    //
     // The query to handle will be sent as an argument.
+    // 
     // It must return the result of a query execution.
-    public function fetch(MyQuery $query): ?MyEntity
+    public function __invoke(MyQuery $query): ?MyEntity
     {
         $foo = $query->foo;
         $bar = $query->bar;
@@ -178,10 +190,15 @@ class MyEventSubscriber
         $this->anotherDependency = $anotherDependency;
     }
     
-    // This method must be implemented by each command, 
-    // otherwise, there will be thrown an exception.
+    // The bus looks if the handler is invokable and calls the
+    // "__invoke" method if it exists. Also, it can look for 
+    // the methods "notify" or "handle" and calls them.
+    // 
+    // Otherwise, if those methods aren't exists - 
+    // the exception will be thrown.
+    //
     // The event to handle will be sent as an argument.
-    public function notify(MyEvent $event): void
+    public function __invoke(MyEvent $event): void
     {
         $foo = $event->foo;
         $bar = $event->bar;

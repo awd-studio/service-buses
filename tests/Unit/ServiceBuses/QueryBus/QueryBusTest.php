@@ -50,7 +50,9 @@ class QueryBusTest extends TestCase
      */
     public function testSubscribe()
     {
-        $instance = $this->instance->subscribe(\get_class(new class{}), \stdClass::class);
+        $instance = $this->instance->subscribe(\get_class(new class
+        {
+        }), \stdClass::class);
 
         $this->assertInstanceOf(QueryBusInterface::class, $instance);
     }
@@ -59,20 +61,12 @@ class QueryBusTest extends TestCase
      * @covers ::subscribe
      * @covers ::handle
      * @covers ::resolveHandler
-     * @covers ::validateHandler
+     * @covers ::resolveHandlingMethod
+     *
+     * @dataProvider queryHandlersDataProvider
      */
-    public function testSubscribeHandle()
+    public function testSubscribeAndHandle($handler, $expected)
     {
-        // Sample handler
-        $handler = new class
-        {
-            // Required method
-            public function fetch(\stdClass $query)
-            {
-                return 42;
-            }
-        };
-
         // Subscribe a handler to a sample command
         $this->instance->subscribe(\get_class($handler), \stdClass::class);
 
@@ -85,7 +79,7 @@ class QueryBusTest extends TestCase
         // Executing
         $result = $this->instance->handle(new \stdClass());
 
-        $this->assertSame(42, $result);
+        $this->assertSame($expected, $result);
     }
 
     /**
@@ -102,7 +96,7 @@ class QueryBusTest extends TestCase
     /**
      * @covers ::handle
      * @covers ::resolveHandler
-     * @covers ::validateHandler
+     * @covers ::resolveHandlingMethod
      */
     public function testHandleWrongHandler()
     {
@@ -121,6 +115,47 @@ class QueryBusTest extends TestCase
             ->willReturn($handler);
 
         $this->instance->handle(new \stdClass());
+    }
+
+    /**
+     * Provides 3 query handlers with allowed different handling methods.
+     *
+     * @return array
+     */
+    public function queryHandlersDataProvider(): array
+    {
+        $q1 = new class
+        {
+            // Required method
+            public function __invoke(\stdClass $query)
+            {
+                return 41;
+            }
+        };
+
+        $q2 = new class
+        {
+            // Required method
+            public function handle(\stdClass $query)
+            {
+                return 42;
+            }
+        };
+
+        $q3 = new class
+        {
+            // Required method
+            public function fetch(\stdClass $query)
+            {
+                return 43;
+            }
+        };
+
+        return [
+            [$q1, 41],
+            [$q2, 42],
+            [$q3, 43],
+        ];
     }
 
 }

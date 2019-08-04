@@ -50,8 +50,8 @@ final class EventBus implements EventBusInterface
         $subscriberIds = $this->resolveSubscribers($event);
         foreach ($subscriberIds as $subscriberId) {
             $handler = $this->container->get($subscriberId);
-            $this->validateHandler($handler);
-            $handler->notify($event);
+            $handlingMethod = $this->resolveHandlingMethod($handler);
+            $handler->{$handlingMethod}($event);
         }
     }
 
@@ -71,20 +71,31 @@ final class EventBus implements EventBusInterface
     }
 
     /**
-     * Checks if the handler contains a required method to execute handling.
+     * Checks if the handler contains a required method to execute handling and returns it's name.
      *
      * @param object $handler A handler to check.
      *
+     * @return string The name of a handler method.
      * @throws \AwdStudio\ServiceBuses\EventBus\Exception\EventSubscriberIsInappropriate
      */
-    private function validateHandler($handler): void
+    private function resolveHandlingMethod($handler): string
     {
-        if (!\method_exists($handler, 'notify')) {
-            throw new EventSubscriberIsInappropriate(\sprintf(
-                'The subscriber "%s" does not contains a required method "notify"',
-                \get_class($handler)
-            ));
+        if (\method_exists($handler, '__invoke')) {
+            return '__invoke';
         }
+
+        if (\method_exists($handler, 'handle')) {
+            return 'handle';
+        }
+
+        if (\method_exists($handler, 'notify')) {
+            return 'notify';
+        }
+
+        throw new EventSubscriberIsInappropriate(\sprintf(
+            'The subscriber "%s" must contain one of required methods: "__invoke", "handle" or "notify""',
+            \get_class($handler)
+        ));
     }
 
 }
