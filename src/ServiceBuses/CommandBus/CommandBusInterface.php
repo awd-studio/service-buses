@@ -8,22 +8,12 @@ interface CommandBusInterface
 {
 
     /**
-     * Subscribes a command-handler to a particular command.
+     * Handles a command.
      *
-     * @param string $commandHandler The handler to subscribe.
-     * @param string $command        The command for which a handler will be executed.
+     * @param object $command
      *
-     * @return \AwdStudio\ServiceBuses\CommandBus\CommandBusInterface
-     */
-    public function subscribe(string $commandHandler, string $command): self;
-
-    /**
-     * Handles a certain command, with a registered command handler.
-     *
-     * @param mixed $command The command to handle.
-     *
-     * @throws \AwdStudio\ServiceBuses\CommandBus\Exception\CommandHandlerNotDefined
-     * @throws \AwdStudio\ServiceBuses\CommandBus\Exception\CommandHandlerIsInappropriate
+     * @throws \AwdStudio\ServiceBuses\Exception\HandlerNotDefined
+     * @throws \AwdStudio\ServiceBuses\Exception\WrongMessage
      */
     public function handle($command): void;
 

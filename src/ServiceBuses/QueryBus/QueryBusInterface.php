@@ -8,23 +8,14 @@ interface QueryBusInterface
 {
 
     /**
-     * Added a query-handler to the list of handlers by the query which it handles.
-     *
-     * @param string $queryHandler The handler's service ID.
-     * @param string $query        The query class to handle.
-     *
-     * @return \AwdStudio\ServiceBuses\QueryBus\QueryBusInterface
-     */
-    public function subscribe(string $queryHandler, string $query): self;
-
-    /**
-     * Handles a query with a handler from the collection.
+     * Handles a query.
      *
      * @param object $query
      *
      * @return mixed
-     * @throws \AwdStudio\ServiceBuses\QueryBus\Exception\QueryHandlerNotDefined
-     * @throws \AwdStudio\ServiceBuses\QueryBus\Exception\QueryHandlerIsNotAppropriate
+     *
+     * @throws \AwdStudio\ServiceBuses\Exception\HandlerNotDefined
+     * @throws \AwdStudio\ServiceBuses\Exception\WrongMessage
      */
     public function handle($query);
 
