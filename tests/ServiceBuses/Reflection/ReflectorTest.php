@@ -34,11 +34,11 @@ class ReflectorTest extends TestCase
     {
         $middleware = new class
         {
-            public function foo() { }
+            public function __invoke() { }
         };
 
-        $this->assertInstanceOf(Reflector::class, Reflector::create([$middleware, 'foo']));
-        $this->assertInstanceOf(Reflector::class, Reflector::create([\get_class($middleware), 'foo']));
+        $this->assertInstanceOf(Reflector::class, Reflector::create([$middleware, '__invoke']));
+        $this->assertInstanceOf(Reflector::class, Reflector::create($middleware));
     }
 
     /**
@@ -92,26 +92,6 @@ class ReflectorTest extends TestCase
             Reflector::create($middleware)->firstParametersTypeName()
         );
     }
-
-    /**
-     * @covers ::create
-     * @covers ::__construct
-     * @covers ::firstParametersTypeName
-     * @covers ::resolveInvokableArgument
-     * @covers ::getFirsParameter
-     */
-//    public function testFirstParametersTypeNameNoTypeOnBuiltin()
-//    {
-//        $middleware = new class
-//        {
-//            public function __invoke(\stdClass $foo) { }
-//        };
-//
-//        $this->assertSame(
-//            Reflector::NO_INVOKABLE_ARGUMENT,
-//            Reflector::create($middleware)->firstParametersTypeName()
-//        );
-//    }
 
     /**
      * @covers ::create

@@ -17,24 +17,6 @@ class ParameterReflectorTest extends TestCase
      * @covers ::canBeProcessed
      * @covers ::name
      */
-//    public function testNoName()
-//    {
-//        $dependency = new class
-//        {
-//            public function foo(\stdClass $bar) { }
-//        };
-//
-//        $parameter = $this->invokeFirstParameter($dependency, 'foo');
-//
-//        $reflector = new ParameterReflector($parameter);
-//        $this->assertNull($reflector->name());
-//    }
-
-    /**
-     * @covers ::__construct
-     * @covers ::canBeProcessed
-     * @covers ::name
-     */
     public function testUndefinedName()
     {
         $dependency = new class

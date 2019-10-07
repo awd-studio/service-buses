@@ -58,25 +58,6 @@ class ParameterIsProcessableTest extends TestCase
      * @covers ::resolveTypeClass
      * @covers ::isProcessable
      */
-//    public function testIsNotProcessableIsInternal()
-//    {
-//        $customClass = new class {
-//            public function foo(\stdClass $bar) {}
-//        };
-//
-//        $parameter = $this->invokeFirstParameter($customClass, 'foo');
-//
-//        $this->assertFalse(ParameterIsProcessable::create($parameter)->isProcessable());
-//    }
-
-    /**
-     * @covers ::create
-     * @covers ::__construct
-     * @covers ::process
-     * @covers ::processClass
-     * @covers ::resolveTypeClass
-     * @covers ::isProcessable
-     */
     public function testIsNotProcessableUndefinedDependency()
     {
         $customClass = new class {
