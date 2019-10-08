@@ -4,6 +4,7 @@ namespace AwdStudio\Tests\ServiceBuses\EventBus;
 
 use AwdStudio\ServiceBuses\EventBus\EventBus;
 use AwdStudio\ServiceBuses\EventBus\EventBusInterface;
+use AwdStudio\ServiceBuses\Exception\HandlerNotDefined;
 use AwdStudio\ServiceBuses\Exception\WrongMessage;
 use AwdStudio\ServiceBuses\Implementation\Middleware\Chain;
 use AwdStudio\Tests\BusTestCase;
@@ -46,7 +47,7 @@ class EventBusTest extends BusTestCase
     {
         $this->expectException(WrongMessage::class);
 
-        $this->instance->run('not an object');
+        $this->instance->handle('not an object');
     }
 
     /**
@@ -64,11 +65,11 @@ class EventBusTest extends BusTestCase
         $handlers
             ->expects($this->any())
             ->method('get')
-            ->willReturn([]);
+            ->willThrowException(new HandlerNotDefined());
 
         $instance = new EventBus($handlers, $middlewareChain);
 
-        $instance->handle(new \stdClass());
+        $instance->handle(new class {});
     }
 
     /**

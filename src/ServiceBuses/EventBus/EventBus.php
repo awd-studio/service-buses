@@ -15,14 +15,9 @@ final class EventBus extends MultipleHandlersBus implements EventBusInterface
      */
     public function handle($event): void
     {
-
-        $this->run($event);
-
-//        try {
-//            $this->run($event);
-//        } catch (HandlerNotDefined $e) {
-//            return;
-//        }
+        try {
+            $this->run($event);
+        } catch (HandlerNotDefined $e) {}
     }
 
 }
