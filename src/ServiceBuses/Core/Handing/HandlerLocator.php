@@ -12,9 +12,12 @@ interface HandlerLocator
      *
      * @param string $message A FQCN of class to handle.
      *
-     * @psalm-param class-string $message
+     * @psalm-param  class-string $message
      *
-     * @return callable[] The list handler for a message.
+     * @return iterable The list handler for a message.
+     *
+     * @psalm-return iterable<int, callable>
+     *
      * @throws \AwdStudio\ServiceBuses\Exception\HandlerNotDefined
      */
     public function get(string $message): iterable;

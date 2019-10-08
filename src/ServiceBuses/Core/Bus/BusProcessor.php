@@ -28,7 +28,9 @@ abstract class BusProcessor
      *
      * @param object $message
      *
-     * @return callable[]
+     * @return iterable
+     *
+     * @psalm-return iterable<int, callable>
      *
      * @throws \AwdStudio\ServiceBuses\Exception\HandlerNotDefined
      * @throws \AwdStudio\ServiceBuses\Exception\WrongMessage
