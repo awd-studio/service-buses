@@ -43,9 +43,13 @@ use AwdStudio\ServiceBuses\Implementation\Middleware\Chain;
 class MyMiddleware
 {
     // You can use types to define processing command
-    public function __invoke(MyCommand $command): void
+    public function __invoke(MyCommand $command, callable $next): void
     {
-        // Process the command ...
+        // Preprocess the command ...
+        $result = $next($command);
+        // Or postprocess the command ...
+
+        return $result; // Return the result
     }    
 }
 
