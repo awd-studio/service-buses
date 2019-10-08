@@ -13,11 +13,11 @@
 #### Contents:
 - [Requirements](#requirements)
 - [Usage](#usage)
+  - [Global configuration](#configuration)
   - [Command Bus](#command-bus)
   - [Query Bus](#query-bus)
   - [Event Bus](#event-bus)
 - [Testing](#testing)
-- [Global configuration](#global-configuration)
 
 -----
 
@@ -74,6 +74,7 @@ $middlewareChain->add(new MyMiddleware());
 $middlewareChain = new ChannelChain();
 $middlewareChain->add(new MyMiddleware()); // Will be called only for the MyCommand
 ```
+-----
 
 ### Command Bus:
 ```php
