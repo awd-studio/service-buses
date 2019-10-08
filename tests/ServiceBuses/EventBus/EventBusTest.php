@@ -8,6 +8,7 @@ use AwdStudio\ServiceBuses\Exception\HandlerNotDefined;
 use AwdStudio\ServiceBuses\Exception\WrongMessage;
 use AwdStudio\ServiceBuses\Implementation\Middleware\Chain;
 use AwdStudio\Tests\BusTestCase;
+use AwdStudio\Tests\ServiceBuses\Stub\Foo;
 
 /**
  * @coversDefaultClass \AwdStudio\ServiceBuses\EventBus\EventBus
@@ -125,6 +126,50 @@ class EventBusTest extends BusTestCase
         $this->assertEquals(2, $event->calledTimes);
         $this->assertSame($event->value, $middleware->value);
         $this->assertSame($event->value, $handler->value);
+    }
+
+    /**
+     * @covers ::handle
+     * @covers ::run
+     * @covers ::resolveHandlers
+     * @covers ::validateCommand
+     * @covers ::execute
+     */
+    public function testHandleMultipleHandlers()
+    {
+        $handler1 = new class
+        {
+            public $isCalled = false;
+
+            public function __invoke(Foo $event)
+            {
+                $this->isCalled = true;
+            }
+        };
+
+        $handler2 = new class
+        {
+            public $isCalled = false;
+
+            public function __invoke(Foo $event)
+            {
+                $this->isCalled = true;
+            }
+        };
+
+        $middlewareChain = new Chain();
+
+        $handlers = $this->getHandlersMock();
+        $handlers
+            ->expects($this->any())
+            ->method('get')
+            ->willReturn([$handler1, $handler2]);
+
+        $instance = new EventBus($handlers, $middlewareChain);
+        $instance->handle(new Foo());
+
+        $this->assertTrue($handler1->isCalled);
+        $this->assertTrue($handler2->isCalled);
     }
 
 }
