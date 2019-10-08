@@ -30,15 +30,9 @@ class ContainerHandlerLocator implements HandlerLocator
      *
      * @psalm-param class-string $message Message's class FCQN.
      * @psalm-param class-string $handler Handler's class FCQN.
-     *
-     * @throws \AwdStudio\ServiceBuses\Exception\HandlerNotDefined
      */
     public function add(string $message, string $handler): void
     {
-        if (!$this->container->has($handler)) {
-            throw new HandlerNotDefined(\sprintf('Undefined handler "%s"', $handler));
-        }
-
         $this->handlers[$message][] = $handler;
     }
 

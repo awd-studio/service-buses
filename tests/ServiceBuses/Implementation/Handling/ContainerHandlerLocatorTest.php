@@ -43,24 +43,6 @@ class ContainerHandlerLocatorTest extends BusTestCase
 
     /**
      * @covers ::__construct
-     * @covers ::add
-     */
-    public function testAddWrongHandler()
-    {
-        $container = $this->getContainerMock();
-        $container
-            ->expects($this->any())
-            ->method('has')
-            ->willReturn(false);
-
-        $instance = new ContainerHandlerLocator($container);
-
-        $this->expectException(HandlerNotDefined::class);
-        $instance->add('foo', 'not a handler');
-    }
-
-    /**
-     * @covers ::__construct
      * @covers ::get
      * @covers ::hasHandler
      * @covers ::resolveForMessage
@@ -91,11 +73,7 @@ class ContainerHandlerLocatorTest extends BusTestCase
 
         $container = $this->getContainerMock();
         $container
-            ->expects($this->at(0))
-            ->method('has')
-            ->willReturn(true);
-        $container
-            ->expects($this->at(1))
+            ->expects($this->any())
             ->method('has')
             ->willReturn(false);
 
