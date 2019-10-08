@@ -33,10 +33,22 @@
         }
     ],
     "minimum-stability": "stable",
-    "scripts":
-    {
-        "test": [ "@stan", "@unit" ],
+    "scripts": {
+        "test": [
+            "@stan",
+            "@unit"
+        ],
         "stan": "phpstan analyse --level=7 --configuration=phpstan.neon src tests",
         "unit": "phpunit -c phpunit.xml.dist"
-    }
+    },
+    "keywords": [
+        "cqrs",
+        "command-bus",
+        "query-bus",
+        "event-bus",
+        "cqrs-pattern",
+        "service-buses",
+        "php"
+    ],
+    "homepage": "https://github.com/awd-studio/service-buses"
 }
