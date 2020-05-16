@@ -1,12 +1,11 @@
 <?php
 
-declare(strict_types=1); // strict mode
+declare(strict_types=1);
 
 namespace AwdStudio\ServiceBuses\CommandBus;
 
 interface CommandBusInterface
 {
-
     /**
      * Handles a command.
      *
@@ -16,5 +15,4 @@ interface CommandBusInterface
      * @throws \AwdStudio\ServiceBuses\Exception\WrongMessage
      */
     public function handle($command): void;
-
 }

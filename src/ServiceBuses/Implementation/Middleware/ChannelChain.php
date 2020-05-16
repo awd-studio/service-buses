@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1); // strict mode
+declare(strict_types=1);
 
 namespace AwdStudio\ServiceBuses\Implementation\Middleware;
 
@@ -9,22 +9,25 @@ use AwdStudio\ServiceBuses\Reflection\Reflector;
 
 final class ChannelChain implements MiddlewareChain
 {
-
-    /** @var array */
-    private $channels = [];
+    /**
+     * @var array<string, array<array-key, callable>>
+     */
+    private $channels;
 
     public function __construct()
     {
         $this->channels = [Reflector::NO_INVOKABLE_ARGUMENT => []];
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function add(callable $middleware): void
     {
         $channel = Reflector::create($middleware)->firstParametersTypeName();
         $this->addToChannel($channel, $middleware);
+    }
+
+    public function chain($message, callable $handler): callable
+    {
+        return $this->chainForChannel($message, $handler);
     }
 
     private function addToChannel(string $channel, callable $middleware): void
@@ -33,20 +36,9 @@ final class ChannelChain implements MiddlewareChain
     }
 
     /**
-     * {@inheritDoc}
-     */
-    public function chain($message, callable $handler): callable
-    {
-        return $this->chainForChannel($message, $handler);
-    }
-
-    /**
      * Builds chain.
      *
-     * @param object   $message
-     * @param callable $handler
-     *
-     * @return callable
+     * @param object $message
      */
     private function chainForChannel($message, callable $handler): callable
     {
@@ -62,8 +54,6 @@ final class ChannelChain implements MiddlewareChain
     /**
      * Resolves all items for particular channel.
      *
-     * @param string $messageClass
-     *
      * @psalm-param class-string $messageClass
      *
      * @return callable[]
@@ -77,5 +67,4 @@ final class ChannelChain implements MiddlewareChain
 
         yield from $this->channels[Reflector::NO_INVOKABLE_ARGUMENT];
     }
-
 }

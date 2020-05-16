@@ -1,0 +1,10 @@
+parameters:
+    paths:
+        - 'src'
+
+    sets:
+        - 'clean-code'
+        - 'psr12'
+        - 'symfony'
+        - 'php70'
+        - 'php71'

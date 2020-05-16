@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1); // strict mode
+declare(strict_types=1);
 
 namespace AwdStudio\ServiceBuses\EventBus;
 
@@ -9,15 +9,11 @@ use AwdStudio\ServiceBuses\Exception\HandlerNotDefined;
 
 final class EventBus extends MultipleHandlersBus implements EventBusInterface
 {
-
-    /**
-     * {@inheritDoc}
-     */
     public function handle($event): void
     {
         try {
             $this->run($event);
-        } catch (HandlerNotDefined $e) {}
+        } catch (HandlerNotDefined $e) {
+        }
     }
-
 }

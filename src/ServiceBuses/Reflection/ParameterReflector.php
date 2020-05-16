@@ -1,30 +1,27 @@
 <?php
 
-declare(strict_types=1); // strict mode
+declare(strict_types=1);
 
 namespace AwdStudio\ServiceBuses\Reflection;
 
 final class ParameterReflector
 {
-
-    /** @var \ReflectionParameter */
+    /**
+     * @var \ReflectionParameter
+     */
     public $parameter;
-
-    /** @var \ReflectionType|null */
-    public $type = null;
 
     public function __construct(\ReflectionParameter $parameter)
     {
         $this->parameter = $parameter;
-        if ($this->parameter->hasType()) {
-            $this->type = $this->parameter->getType();
-        }
     }
 
     public function name(): ?string
     {
         if ($this->canBeProcessed()) {
-            return (string) $this->type;
+            $paramType = $this->parameter->getType();
+
+            return $paramType instanceof \ReflectionNamedType ? $paramType->getName() : null;
         }
 
         return null;
@@ -34,5 +31,4 @@ final class ParameterReflector
     {
         return ParameterIsProcessable::create($this->parameter)->isProcessable();
     }
-
 }

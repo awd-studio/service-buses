@@ -1,15 +1,16 @@
 <?php
 
-declare(strict_types=1); // strict mode
+declare(strict_types=1);
 
 namespace AwdStudio\ServiceBuses\Reflection;
 
 final class Reflector
 {
+    public const NO_INVOKABLE_ARGUMENT = '!NO_INVOKABLE_ARGUMENT';
 
-    const NO_INVOKABLE_ARGUMENT = '!NO_INVOKABLE_ARGUMENT';
-
-    /** @var \ReflectionFunctionAbstract */
+    /**
+     * @var \ReflectionFunctionAbstract
+     */
     private $callback;
 
     public function __construct(callable $callback)
@@ -55,5 +56,4 @@ final class Reflector
 
         return null;
     }
-
 }

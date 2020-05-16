@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1); // strict mode
+declare(strict_types=1);
 
 namespace AwdStudio\ServiceBuses\Implementation\Handling;
 
@@ -10,11 +10,14 @@ use Psr\Container\ContainerInterface;
 
 class ContainerHandlerLocator implements HandlerLocator
 {
-
-    /** @var \Psr\Container\ContainerInterface */
+    /**
+     * @var \Psr\Container\ContainerInterface
+     */
     private $container;
 
-    /** @var array<string,array<int,string>> */
+    /**
+     * @var array<string,array<int,string>>
+     */
     private $handlers = [];
 
     public function __construct(ContainerInterface $container)
@@ -25,8 +28,8 @@ class ContainerHandlerLocator implements HandlerLocator
     /**
      * Registers a handler which processes a message.
      *
-     * @param string $message Message's class FCQN.
-     * @param string $handler Handler's class FCQN.
+     * @param string $message message's class FCQN
+     * @param string $handler handler's class FCQN
      *
      * @psalm-param class-string $message Message's class FCQN.
      * @psalm-param class-string $handler Handler's class FCQN.
@@ -36,9 +39,6 @@ class ContainerHandlerLocator implements HandlerLocator
         $this->handlers[$message][] = $handler;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function get(string $message): iterable
     {
         if (!$this->hasHandler($message)) {
@@ -57,6 +57,7 @@ class ContainerHandlerLocator implements HandlerLocator
             foreach ($this->handlers[$message] as $handler) {
                 if (!$this->container->has($handler)) {
                     $hasHandlers = false;
+
                     break;
                 }
             }
@@ -65,11 +66,15 @@ class ContainerHandlerLocator implements HandlerLocator
         return $hasMessage && $hasHandlers;
     }
 
+    /**
+     * Resolves a handler for certain message.
+     *
+     * @return iterable<callable>
+     */
     private function resolveForMessage(string $message): iterable
     {
         foreach ($this->handlers[$message] as $handler) {
             yield $this->container->get($handler);
         }
     }
-
 }

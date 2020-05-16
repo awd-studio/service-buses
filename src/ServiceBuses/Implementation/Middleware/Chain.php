@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1); // strict mode
+declare(strict_types=1);
 
 namespace AwdStudio\ServiceBuses\Implementation\Middleware;
 
@@ -8,8 +8,9 @@ use AwdStudio\ServiceBuses\Core\Middleware\MiddlewareChain;
 
 final class Chain implements MiddlewareChain
 {
-
-    /** @var callable[] */
+    /**
+     * @var callable[]
+     */
     private $middleware = [];
 
     public function __construct(callable ...$middleware)
@@ -17,42 +18,27 @@ final class Chain implements MiddlewareChain
         $this->middleware = $middleware;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function add(callable $middleware): void
     {
         $this->middleware[] = $middleware;
     }
 
     /**
-     * {@inheritDoc}
+     * @psalm-suppress MissingClosureParamType
+     * @psalm-suppress MissingClosureReturnType
      */
     public function chain($message, callable $handler): callable
     {
-        $next =
-            /**
-             * @return mixed
-             */
-            function () use ($handler, $message)
-            {
-                return $handler($message);
-            };
+        $next = static function () use ($handler, $message) {
+            return $handler($message);
+        };
 
         foreach ($this->middleware as $middleware) {
-            $next =
-                /**
-                 * @param object $message
-                 *
-                 * @return mixed
-                 */
-                function ($message) use ($middleware, $next)
-                {
-                    return $middleware($message, $next);
-                };
+            $next = static function ($message) use ($middleware, $next) {
+                return $middleware($message, $next);
+            };
         }
 
         return $next;
     }
-
 }
