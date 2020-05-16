@@ -3,6 +3,7 @@ language: php
 php:
     - 7.2
     - 7.3
+    - 7.4
 
 sudo: false
 
@@ -13,9 +14,7 @@ before_script:
 
 script:
     - mkdir -p build/logs
-    - php vendor/bin/psalm --config=psalm.xml.dist
-    - php vendor/bin/phpstan analyse --level=7 --configuration=phpstan.neon src
-    - php vendor/bin/phpunit -c phpunit.xml.dist
+    - php composer test
 
 matrix:
     fast_finish: true

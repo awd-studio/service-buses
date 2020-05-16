@@ -10,10 +10,11 @@
         "phpunit/phpunit": "^8.1",
         "phpunit/php-code-coverage": "^7.0",
         "dg/bypass-finals": "^1.1",
-        "phpstan/phpstan": "^0.11.8",
-        "phpstan/phpstan-phpunit": "^0.11.2",
+        "phpstan/phpstan": "^0.12",
+        "phpstan/phpstan-phpunit": "^0.12",
         "php-coveralls/php-coveralls": "^2.1",
-        "vimeo/psalm": "^3.4"
+        "vimeo/psalm": "^3.4",
+        "symplify/easy-coding-standard": "^7.3"
     },
     "autoload": {
         "psr-4": {
@@ -35,11 +36,15 @@
     "minimum-stability": "stable",
     "scripts": {
         "test": [
+            "@ecs",
+            "@psalm",
             "@stan",
             "@unit"
         ],
-        "stan": "phpstan analyse --level=7 --configuration=phpstan.neon src tests",
-        "unit": "phpunit -c phpunit.xml.dist"
+        "ecs": "vendor/bin/ecs check",
+        "psalm": "vendor/bin/psalm",
+        "stan": "vendor/bin/phpstan analyse",
+        "unit": "vendor/bin/phpunit"
     },
     "keywords": [
         "cqrs",
