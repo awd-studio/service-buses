@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1); // strict mode
+declare(strict_types=1);
 
 namespace AwdStudio\ServiceBuses\Implementation\Handling;
 
@@ -9,19 +9,19 @@ use AwdStudio\ServiceBuses\Exception\HandlerNotDefined;
 
 class InMemoryHandlerLocator implements HandlerLocator
 {
+    /**
+     * @var array<string,array<int,callable>>
+     */
+    private $handlers;
 
-    /** @var array<string,array<int,callable>> */
-    private $handlers = [];
-
-    /** @param array<string,array<int,callable>> $handlers */
+    /**
+     * @param array<string,array<int,callable>> $handlers
+     */
     public function __construct(array $handlers)
     {
         $this->handlers = $handlers;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function get(string $message): iterable
     {
         if (empty($this->handlers[$message])) {
@@ -30,5 +30,4 @@ class InMemoryHandlerLocator implements HandlerLocator
 
         return $this->handlers[$message];
     }
-
 }

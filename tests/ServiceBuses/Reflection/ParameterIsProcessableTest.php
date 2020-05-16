@@ -15,9 +15,6 @@ class ParameterIsProcessableTest extends TestCase
     /**
      * @covers ::create
      * @covers ::__construct
-     * @covers ::process
-     * @covers ::processClass
-     * @covers ::resolveTypeClass
      * @covers ::isProcessable
      */
     public function testIsProcessable()
@@ -34,9 +31,6 @@ class ParameterIsProcessableTest extends TestCase
     /**
      * @covers ::create
      * @covers ::__construct
-     * @covers ::process
-     * @covers ::processClass
-     * @covers ::resolveTypeClass
      * @covers ::isProcessable
      */
     public function testIsNotProcessableNoTypeDefinition()
@@ -53,9 +47,6 @@ class ParameterIsProcessableTest extends TestCase
     /**
      * @covers ::create
      * @covers ::__construct
-     * @covers ::process
-     * @covers ::processClass
-     * @covers ::resolveTypeClass
      * @covers ::isProcessable
      */
     public function testIsNotProcessableUndefinedDependency()

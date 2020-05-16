@@ -1,12 +1,11 @@
 <?php
 
-declare(strict_types=1); // strict mode
+declare(strict_types=1);
 
 namespace AwdStudio\ServiceBuses\Core\Bus;
 
 abstract class MultipleHandlersBus extends BusProcessor
 {
-
     /**
      * Processes a particular message.
      *
@@ -21,5 +20,4 @@ abstract class MultipleHandlersBus extends BusProcessor
             $this->execute($message, $handler);
         }
     }
-
 }

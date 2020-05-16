@@ -1,7 +1,9 @@
 <?php
 
-declare(strict_types=1); // strict mode
+declare(strict_types=1);
 
 namespace AwdStudio\ServiceBuses\Exception;
 
-abstract class BusException extends \RuntimeException {}
+abstract class BusException extends \RuntimeException
+{
+}

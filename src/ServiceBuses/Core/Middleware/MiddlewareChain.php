@@ -1,12 +1,11 @@
 <?php
 
-declare(strict_types=1); // strict mode
+declare(strict_types=1);
 
 namespace AwdStudio\ServiceBuses\Core\Middleware;
 
 interface MiddlewareChain
 {
-
     /**
      * Appends a middleware link.
      *
@@ -23,19 +22,13 @@ interface MiddlewareChain
      *
      *     return $result;
      * }
-     *
-     * @param callable $middleware
      */
     public function add(callable $middleware): void;
 
     /**
      * Returns an arranged chain of responsibility to execute.
      *
-     * @param object   $message
-     * @param callable $handler
-     *
-     * @return callable
+     * @param object $message
      */
     public function chain($message, callable $handler): callable;
-
 }

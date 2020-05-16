@@ -1,12 +1,11 @@
 <?php
 
-declare(strict_types=1); // strict mode
+declare(strict_types=1);
 
 namespace AwdStudio\ServiceBuses\EventBus;
 
 interface EventBusInterface
 {
-
     /**
      * Handles an event.
      *
@@ -15,5 +14,4 @@ interface EventBusInterface
      * @throws \AwdStudio\ServiceBuses\Exception\WrongMessage
      */
     public function handle($event): void;
-
 }

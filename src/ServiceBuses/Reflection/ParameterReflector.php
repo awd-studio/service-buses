@@ -1,16 +1,19 @@
 <?php
 
-declare(strict_types=1); // strict mode
+declare(strict_types=1);
 
 namespace AwdStudio\ServiceBuses\Reflection;
 
 final class ParameterReflector
 {
-
-    /** @var \ReflectionParameter */
+    /**
+     * @var \ReflectionParameter
+     */
     public $parameter;
 
-    /** @var \ReflectionType|null */
+    /**
+     * @var \ReflectionType|null
+     */
     public $type = null;
 
     public function __construct(\ReflectionParameter $parameter)
@@ -34,5 +37,4 @@ final class ParameterReflector
     {
         return ParameterIsProcessable::create($this->parameter)->isProcessable();
     }
-
 }

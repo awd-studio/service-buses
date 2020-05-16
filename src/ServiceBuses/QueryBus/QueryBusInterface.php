@@ -1,12 +1,11 @@
 <?php
 
-declare(strict_types=1); // strict mode
+declare(strict_types=1);
 
 namespace AwdStudio\ServiceBuses\QueryBus;
 
 interface QueryBusInterface
 {
-
     /**
      * Handles a query.
      *
@@ -18,5 +17,4 @@ interface QueryBusInterface
      * @throws \AwdStudio\ServiceBuses\Exception\WrongMessage
      */
     public function handle($query);
-
 }

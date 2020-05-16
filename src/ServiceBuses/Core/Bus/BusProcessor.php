@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1); // strict mode
+declare(strict_types=1);
 
 namespace AwdStudio\ServiceBuses\Core\Bus;
 
@@ -10,11 +10,14 @@ use AwdStudio\ServiceBuses\Exception\WrongMessage;
 
 abstract class BusProcessor
 {
-
-    /** @var \AwdStudio\ServiceBuses\Core\Handing\HandlerLocator */
+    /**
+     * @var \AwdStudio\ServiceBuses\Core\Handing\HandlerLocator
+     */
     protected $handlers;
 
-    /** @var \AwdStudio\ServiceBuses\Core\Middleware\MiddlewareChain */
+    /**
+     * @var \AwdStudio\ServiceBuses\Core\Middleware\MiddlewareChain
+     */
     protected $middleware;
 
     public function __construct(HandlerLocator $handlers, MiddlewareChain $middleware)
@@ -28,12 +31,7 @@ abstract class BusProcessor
      *
      * @param object $message
      *
-     * @return iterable
-     *
-     * @psalm-return iterable<int, callable>
-     *
-     * @throws \AwdStudio\ServiceBuses\Exception\HandlerNotDefined
-     * @throws \AwdStudio\ServiceBuses\Exception\WrongMessage
+     * @return iterable<int, callable>
      */
     protected function resolveHandlers($message): iterable
     {
@@ -48,8 +46,6 @@ abstract class BusProcessor
      * @param object   $message
      * @param callable $handler
      *
-     * @psalm-param class-string $messageClass
-     *
      * @return mixed
      */
     protected function execute($message, callable $handler)
@@ -63,16 +59,11 @@ abstract class BusProcessor
      * Checks a command.
      *
      * @param mixed $command
-     *
-     * @throws \AwdStudio\ServiceBuses\Exception\WrongMessage
      */
     protected function validateCommand($command): void
     {
         if (!is_object($command)) {
-            throw new WrongMessage(
-                \sprintf('Command must be an object, %s given.', \gettype($command))
-            );
+            throw new WrongMessage(\sprintf('Command must be an object, %s given.', \gettype($command)));
         }
     }
-
 }
