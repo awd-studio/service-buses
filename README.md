@@ -34,10 +34,10 @@
 ```php
 <?php
 
-use AwdStudio\ServiceBuses\Implementation\Handling\ContainerHandlerLocator;
-use AwdStudio\ServiceBuses\Implementation\Handling\InMemoryHandlerLocator;
-use AwdStudio\ServiceBuses\Implementation\Middleware\ChannelChain;
-use AwdStudio\ServiceBuses\Implementation\Middleware\Chain;
+use AwdStudio\Bus\Implementation\Handling\ContainerHandlerLocator;
+use AwdStudio\Bus\Implementation\Handling\InMemoryHandlerLocator;
+use AwdStudio\Bus\Implementation\Middleware\ChannelChain;
+use AwdStudio\Bus\Implementation\Middleware\Chain;
 
 // Middleware also must be invokable
 class MyMiddleware
@@ -80,7 +80,7 @@ $middlewareChain->add(new MyMiddleware()); // Will be called only for the MyComm
 ```php
 <?php
 
-use AwdStudio\ServiceBuses\CommandBus\CommandBus;
+use AwdStudio\Bus\CommandBus\CommandBus;
 
 // Create any command you need
 class MyCommand 
@@ -109,7 +109,7 @@ $commandBus->handle(new MyCommand());
 ```php
 <?php
 
-use AwdStudio\ServiceBuses\QueryBus\QueryBus;
+use AwdStudio\Bus\QueryBus\QueryBus;
 
 // Create any query you need
 class MyQuery
@@ -138,7 +138,7 @@ $result = $queryBus->handle(new MyQuery());
 ```php
 <?php
 
-use AwdStudio\ServiceBuses\EventBus\EventBus;
+use AwdStudio\Bus\EventBus\EventBus;
 
 // Create any event you need
 class MyEvent 
