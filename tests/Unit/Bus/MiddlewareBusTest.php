@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace AwdStudio\Tests\Unit\Bus;
 
-use AwdStudio\Bus\Bus;
+use AwdStudio\Bus\MiddlewareBus;
 use AwdStudio\Bus\Handlers;
 use AwdStudio\Bus\Middleware;
 use AwdStudio\Tests\BusTestCase;
 use Prophecy\Argument;
 
 /**
- * @coversDefaultClass \AwdStudio\Bus\Bus
+ * @coversDefaultClass \AwdStudio\Bus\MiddlewareBus
  */
-final class BusTest extends BusTestCase
+final class MiddlewareBusTest extends BusTestCase
 {
-    /** @var \AwdStudio\Bus\Bus */
+    /** @var \AwdStudio\Bus\MiddlewareBus */
     private $instance;
 
     /** @var \AwdStudio\Bus\Handlers|\Prophecy\Prophecy\ObjectProphecy */
@@ -31,20 +31,19 @@ final class BusTest extends BusTestCase
         $this->handlersProphecy = $this->prophesize(Handlers::class);
         $this->middlewareProphecy = $this->prophesize(Middleware::class);
 
-        $this->instance = new class($this->handlersProphecy->reveal(), $this->middlewareProphecy->reveal()) extends Bus {
+        $this->instance = new class(
+            $this->handlersProphecy->reveal(),
+            $this->middlewareProphecy->reveal()
+        ) extends MiddlewareBus {
             /**
              * @param object $message
+             * @param mixed  ...$extra
              *
-             * @return mixed|null
+             * @return iterable<callable>
              */
-            public function test(object $message)
+            public function test(object $message, ...$extra): iterable
             {
-                $result = null;
-                foreach ($this->doHandling($message) as $time) {
-                    $result = $time;
-                }
-
-                return $result;
+                yield from $this->chain($message, ...$extra);
             }
         };
     }
@@ -58,30 +57,28 @@ final class BusTest extends BusTestCase
     }
 
     /**
-     * @covers ::doHandling
+     * @covers ::chain
      */
-    public function testMustReturnAResultFromAHandler(): void
+    public function testMustBuildAChainWithAHandler(): void
     {
         $message = new \stdClass();
         $handler = static function (\stdClass $message): int { return 42; };
 
         $this->handlersProphecy
-            ->get(Argument::exact($message))
-            ->willYield([$handler])
-            ->shouldBeCalledOnce();
+            ->get(Argument::exact(\stdClass::class))
+            ->willYield([$handler]);
 
         $this->middlewareProphecy
-            ->buildChain(Argument::exact($message), Argument::exact($handler))
-            ->willReturn(static function () use ($message, $handler): int { return $handler($message); })
-            ->shouldBeCalledOnce();
+            ->buildChain(Argument::type('callable'), Argument::exact($message), Argument::any())
+            ->willReturn(static function () use ($message, $handler): int { return $handler($message); });
 
         $firstResult = $this->instance->test($message);
 
-        $this->assertSame(42, $firstResult);
+        $this->assertSame(42, ($firstResult->current())());
     }
 
     /**
-     * @covers ::doHandling
+     * @covers ::chain
      */
     public function testMustApplyEachOfHandlersDuringTheHandling(): void
     {
@@ -96,18 +93,24 @@ final class BusTest extends BusTestCase
         $handler3 = static function (object $message): void { $message->h3 = 1024; };
 
         $this->handlersProphecy
-            ->get(Argument::exact($message))
+            ->has(Argument::exact(\get_class($message)))
+            ->willReturn(true);
+
+        $this->handlersProphecy
+            ->get(Argument::exact(\get_class($message)))
             ->willYield([$handler1, $handler2, $handler3]);
 
         $this->middlewareProphecy
-            ->buildChain(Argument::exact($message), Argument::type('callable'))
+            ->buildChain(Argument::type('callable'), Argument::exact($message), Argument::any())
             ->willReturn(
                 static function () use ($message, $handler1): void { $handler1($message); },
                 static function () use ($message, $handler2): void { $handler2($message); },
                 static function () use ($message, $handler3): void { $handler3($message); }
             );
 
-        $this->instance->test($message);
+        foreach ($this->instance->test($message) as $chain) {
+            $chain();
+        }
 
         $this->assertSame(1, $message->h1);
         $this->assertSame(42, $message->h2);

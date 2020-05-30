@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace AwdStudio\Tests\Unit\Bus\Handler;
 
-use AwdStudio\Bus\Exception\NoHandlerDefined;
 use AwdStudio\Bus\Handler\InMemoryHandlers;
 use AwdStudio\Bus\Handlers;
 use AwdStudio\Tests\BusTestCase;
@@ -12,7 +11,7 @@ use AwdStudio\Tests\BusTestCase;
 /**
  * @coversDefaultClass \AwdStudio\Bus\Handler\InMemoryHandlers
  */
-class InMemoryHandlersTest extends BusTestCase
+final class InMemoryHandlersTest extends BusTestCase
 {
     /** @var \AwdStudio\Bus\Handler\InMemoryHandlers */
     private $instance;
@@ -41,7 +40,7 @@ class InMemoryHandlersTest extends BusTestCase
 
         $this->instance->add(\stdClass::class, $handler);
 
-        $this->assertContains($handler, $this->instance->get(new \stdClass()));
+        $this->assertContains($handler, $this->instance->get(\stdClass::class));
     }
 
     /**
@@ -49,7 +48,7 @@ class InMemoryHandlersTest extends BusTestCase
      */
     public function testMustReturnFalseIfThereIsNoAssignedHandlersForAMessage(): void
     {
-        $this->assertFalse($this->instance->has(new \stdClass()));
+        $this->assertFalse($this->instance->has(\stdClass::class));
     }
 
     /**
@@ -59,7 +58,7 @@ class InMemoryHandlersTest extends BusTestCase
     {
         $this->instance->add(\stdClass::class, static function (object $message) { });
 
-        $this->assertTrue($this->instance->has(new \stdClass()));
+        $this->assertTrue($this->instance->has(\stdClass::class));
     }
 
     /**
@@ -71,7 +70,7 @@ class InMemoryHandlersTest extends BusTestCase
         $this->instance->add(\stdClass::class, static function (object $message) { });
         $this->instance->add(\stdClass::class, static function (object $message) { });
 
-        $this->assertTrue($this->instance->has(new \stdClass()));
+        $this->assertTrue($this->instance->has(\stdClass::class));
     }
 
     /**
@@ -87,7 +86,7 @@ class InMemoryHandlersTest extends BusTestCase
         $this->instance->add(\stdClass::class, $handler2);
         $this->instance->add(\stdClass::class, $handler3);
 
-        $handlers = \iterator_to_array($this->instance->get(new \stdClass()));
+        $handlers = $this->instance->get(\stdClass::class);
 
         $this->assertContains($handler1, $handlers);
         $this->assertContains($handler2, $handlers);
@@ -97,26 +96,10 @@ class InMemoryHandlersTest extends BusTestCase
     /**
      * @covers ::get
      */
-    public function testMustThrowAnExceptionIfTriesToGetAHandlerThatNotInTheList(): void
+    public function testMustReturnAnEmptyIteratorWhenThereIsNoHandlers(): void
     {
-        $this->expectException(NoHandlerDefined::class);
+        $handlers = $this->instance->get(\stdClass::class);
 
-        $this->instance->get(new \stdClass());
-    }
-
-    /**
-     * @covers ::export
-     */
-    public function testMustProvideAnInterfaceToExportAllHandlers(): void
-    {
-        $handler1 = static function (object $message) { };
-        $handler2 = static function (object $message) { };
-        $handler3 = static function (object $message) { };
-
-        $this->instance->add(\stdClass::class, $handler1);
-        $this->instance->add(\stdClass::class, $handler2);
-        $this->instance->add(\stdClass::class, $handler3);
-
-        $this->assertEquals([\stdClass::class => [$handler1, $handler2, $handler3,]], $this->instance->export());
+        $this->assertEmpty($handlers instanceof \Traversable ? \iterator_to_array($handlers) : $handlers);
     }
 }

@@ -10,8 +10,9 @@ interface IEventBus
      * Handles an event.
      *
      * @param object $event
+     * @param mixed  ...$extraParams
      *
      * @throws \AwdStudio\Bus\Exception\NoHandlerDefined
      */
-    public function handle(object $event): void;
+    public function handle(object $event, ...$extraParams): void;
 }

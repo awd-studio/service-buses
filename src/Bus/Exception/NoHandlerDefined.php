@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace AwdStudio\Bus\Exception;
 
-final class NoHandlerDefined extends \RuntimeException
+final class NoHandlerDefined extends BusException
 {
     public function __construct(object $message)
     {

@@ -17,12 +17,12 @@ final class MiddlewareChainHandlingTest extends MiddlewareChainTestCase
     public function testMustInjectAHandlerAsAPartOfChainAndReturnItsResult(): void
     {
         $this->handlersProphecy
-            ->get(Argument::type('object'))
+            ->get(Argument::exact(\stdClass::class))
             ->willYield([]);
 
         $handler = static function (object $message): int { return 42; };
 
-        $chain = $this->instance->buildChain(new \stdClass(), $handler);
+        $chain = $this->instance->buildChain($handler, new \stdClass());
 
         $this->assertSame(42, $chain());
     }
@@ -37,7 +37,7 @@ final class MiddlewareChainHandlingTest extends MiddlewareChainTestCase
             public $i = 0;
         };
 
-        $middleware = static function (object $message, callable $next): int
+        $middleware = static function (callable $next, object $message): int
         {
             ++$message->i;
 
@@ -47,10 +47,10 @@ final class MiddlewareChainHandlingTest extends MiddlewareChainTestCase
         $handler = static function (object $message) { return ++$message->i; };
 
         $this->handlersProphecy
-            ->get(Argument::type('object'))
+            ->get(Argument::exact(\get_class($message)))
             ->willYield([$middleware]);
 
-        $chain = $this->instance->buildChain($message, $handler);
+        $chain = $this->instance->buildChain($handler, $message);
 
         $this->assertSame(2, $chain());
         $this->assertSame(2, $message->i);
@@ -66,7 +66,7 @@ final class MiddlewareChainHandlingTest extends MiddlewareChainTestCase
             public $i = 0;
         };
 
-        $middleware = static function (object $message, callable $next): int
+        $middleware = static function (callable $next, object $message): int
         {
             ++$message->i;
             $result = $next();
@@ -78,12 +78,38 @@ final class MiddlewareChainHandlingTest extends MiddlewareChainTestCase
         $handler = static function (object $message) { return ++$message->i; };
 
         $this->handlersProphecy
-            ->get(Argument::type('object'))
+            ->get(Argument::exact(\get_class($message)))
             ->willYield([$middleware]);
 
-        $chain = $this->instance->buildChain($message, $handler);
+        $chain = $this->instance->buildChain($handler, $message);
 
         $this->assertSame(2, $chain());
         $this->assertSame(3, $message->i);
+    }
+
+    /**
+     * @covers ::buildChain
+     */
+    public function testMustAllowMiddlewareToRewriteHandledResult(): void
+    {
+        $handler = static function (object $message): string
+        {
+            return 'foo';
+        };
+
+        $message = new \stdClass();
+
+        $middleware = static function (callable $next, object $message): string
+        {
+            return 'bar';
+        };
+
+        $this->handlersProphecy
+            ->get(Argument::exact(\get_class($message)))
+            ->willYield([$middleware]);
+
+        $chain = $this->instance->buildChain($handler, $message);
+
+        $this->assertSame('bar', $chain());
     }
 }

@@ -10,8 +10,9 @@ interface ICommandBus
      * Handles a command.
      *
      * @param object $command
+     * @param mixed  ...$extraParams
      *
      * @throws \AwdStudio\Bus\Exception\NoHandlerDefined
      */
-    public function handle(object $command): void;
+    public function handle(object $command, ...$extraParams): void;
 }

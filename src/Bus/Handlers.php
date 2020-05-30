@@ -4,28 +4,36 @@ declare(strict_types=1);
 
 namespace AwdStudio\Bus;
 
+/**
+ * @psalm-template   TCallback of callable
+ * @phpstan-template TCallback of callable
+ */
 interface Handlers
 {
     /**
      * Checks if there are handlers for particular message.
      *
-     * @param object $message
+     * @param string $messageId
      *
      * @return bool
+     *
+     * @psalm-param   class-string $messageId
+     * @phpstan-param class-string $messageId
      */
-    public function has(object $message): bool;
+    public function has(string $messageId): bool;
 
     /**
      * Returns a handlers for particular message.
      *
-     * @param object $message
+     * @param string $messageId
      *
-     * @return \Traversable<object>|callable[]
+     * @return iterable<callable>|callable[]
      *
-     * @throws \AwdStudio\Bus\Exception\NoHandlerDefined
+     * @psalm-param    class-string $messageId
+     * @phpstan-param  class-string $messageId
      *
-     * @psalm-return   \Traversable<array-key, callable>
-     * @phpstan-return \Traversable<array-key, callable>
+     * @psalm-return   iterable<array-key, TCallback>
+     * @phpstan-return iterable<array-key, TCallback>
      */
-    public function get(object $message): \Traversable;
+    public function get(string $messageId): iterable;
 }

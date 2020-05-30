@@ -15,7 +15,7 @@ use Prophecy\Argument;
 /**
  * @coversDefaultClass \AwdStudio\Query\QueryBus
  */
-class QueryBusTest extends BusTestCase
+final class QueryBusTest extends BusTestCase
 {
     /** @var \AwdStudio\Query\QueryBus */
     private $instance;
@@ -56,11 +56,15 @@ class QueryBusTest extends BusTestCase
         $handler = static function (object $message): string { return $message->copyMe; };
 
         $this->handlersProphecy
-            ->get(Argument::exact($message))
+            ->has(Argument::exact($message))
+            ->willReturn(true);
+
+        $this->handlersProphecy
+            ->get(Argument::exact(\get_class($message)))
             ->willYield([$handler]);
 
         $this->middlewareProphecy
-            ->buildChain(Argument::exact($message), Argument::exact($handler))
+            ->buildChain(Argument::exact($handler), Argument::exact($message), Argument::type('array'))
             ->willReturn(static function () use ($message, $handler): string { return $handler($message); });
 
         $result = $this->instance->handle($message);
@@ -95,11 +99,15 @@ class QueryBusTest extends BusTestCase
         };
 
         $this->handlersProphecy
-            ->get(Argument::exact($message))
+            ->has(Argument::exact(\get_class($message)))
+            ->willReturn(true);
+
+        $this->handlersProphecy
+            ->get(Argument::exact(\get_class($message)))
             ->willYield([$handler1, $handler2]);
 
         $this->middlewareProphecy
-            ->buildChain(Argument::exact($message), Argument::exact($handler1))
+            ->buildChain(Argument::type('callable'), Argument::exact($message), Argument::type('array'))
             ->willReturn(
                 static function () use ($message, $handler1): int { return $handler1($message); },
                 static function () use ($message, $handler2): int { return $handler2($message); }
@@ -120,7 +128,7 @@ class QueryBusTest extends BusTestCase
     {
         $this->handlersProphecy
             ->get(Argument::any())
-            ->willThrow(NoHandlerDefined::class);
+            ->willYield([]);
 
         $this->expectException(NoHandlerDefined::class);
 

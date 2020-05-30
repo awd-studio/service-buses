@@ -10,7 +10,7 @@ use AwdStudio\Tests\BusTestCase;
 /**
  * @coversDefaultClass \AwdStudio\Bus\Exception\NoHandlerDefined
  */
-class NoHandlerDefinedTest extends BusTestCase
+final class NoHandlerDefinedTest extends BusTestCase
 {
     /** @var \AwdStudio\Bus\Exception\NoHandlerDefined */
     private $instance;

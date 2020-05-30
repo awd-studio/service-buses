@@ -9,9 +9,20 @@ use AwdStudio\Bus\Middleware;
 
 final class MiddlewareChain implements Middleware
 {
-    /** @var \AwdStudio\Bus\Handlers */
+    /**
+     * @var \AwdStudio\Bus\Handlers
+     *
+     * @psalm-var   Handlers<callable(callable $next, object $message, mixed ...$extraParams): mixed>
+     * @phpstan-var Handlers<callable(callable $next, object $message, mixed ...$extraParams): mixed>
+     */
     private $middleware;
 
+    /**
+     * @param \AwdStudio\Bus\Handlers $handlers
+     *
+     * @psalm-param   Handlers<callable(callable $next, object $message, mixed ...$extraParams): mixed> $handlers
+     * @phpstan-param Handlers<callable(callable $next, object $message, mixed ...$extraParams): mixed> $handlers
+     */
     public function __construct(Handlers $handlers)
     {
         $this->middleware = $handlers;
@@ -20,15 +31,15 @@ final class MiddlewareChain implements Middleware
     /**
      * {@inheritdoc}
      */
-    public function buildChain(object $message, callable $handler): callable
+    public function buildChain(callable $handler, object $message, array $extraParams = []): callable
     {
-        $next = /** @return mixed */ static function () use ($message, $handler) {
-            return $handler($message);
+        $next = /** @return mixed */ static function () use ($handler, $message, $extraParams) {
+            return $handler($message, ...$extraParams);
         };
 
-        foreach ($this->middleware->get($message) as $item) {
-            $next = /** @return mixed */ static function () use ($item, $message, $next) {
-                return $item($message, $next);
+        foreach ($this->middleware->get(\get_class($message)) as $item) {
+            $next = /** @return mixed */ static function () use ($item, $next, $message, $extraParams) {
+                return $item($next, $message, ...$extraParams);
             };
         }
 

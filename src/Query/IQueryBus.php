@@ -10,10 +10,11 @@ interface IQueryBus
      * Handles a query.
      *
      * @param object $query
+     * @param mixed  ...$extraParams
      *
      * @return mixed
      *
      * @throws \AwdStudio\Bus\Exception\NoHandlerDefined
      */
-    public function handle(object $query);
+    public function handle(object $query, ...$extraParams);
 }

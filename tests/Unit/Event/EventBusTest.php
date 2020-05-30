@@ -49,8 +49,8 @@ final class EventBusTest extends BusTestCase
     public function testMustDoNothingIfThereIsNoHandlers(): void
     {
         $this->handlersProphecy
-            ->has(Argument::type('stdClass'))
-            ->willReturn(false)
+            ->get(Argument::exact(\stdClass::class))
+            ->willYield([])
             ->shouldBeCalledOnce();
 
         $this->instance->handle(new \stdClass());
@@ -68,15 +68,15 @@ final class EventBusTest extends BusTestCase
         $handler = static function (object $message): void { $message->isChanged = true; };
 
         $this->handlersProphecy
-            ->has(Argument::exact($message))
+            ->has(Argument::exact(\get_class($message)))
             ->willReturn(true);
 
         $this->handlersProphecy
-            ->get(Argument::exact($message))
+            ->get(Argument::exact(\get_class($message)))
             ->willYield([$handler]);
 
         $this->middlewareProphecy
-            ->buildChain(Argument::exact($message), Argument::exact($handler))
+            ->buildChain(Argument::exact($handler), Argument::exact($message), Argument::type('array'))
             ->willReturn(static function () use ($message, $handler): void { $handler($message); });
 
         $this->instance->handle($message);
@@ -105,15 +105,15 @@ final class EventBusTest extends BusTestCase
         $handler3 = static function (object $message): void { $message->isChanged3 = true; };
 
         $this->handlersProphecy
-            ->has(Argument::exact($message))
+            ->has(Argument::exact(\get_class($message)))
             ->willReturn(true);
 
         $this->handlersProphecy
-            ->get(Argument::exact($message))
+            ->get(Argument::exact(\get_class($message)))
             ->willYield([$handler1, $handler2, $handler3]);
 
         $this->middlewareProphecy
-            ->buildChain(Argument::exact($message), Argument::type('callable'))
+            ->buildChain(Argument::type('callable'), Argument::exact($message), Argument::type('array'))
             ->willReturn(
                 static function () use ($message, $handler1): void { $handler1($message); },
                 static function () use ($message, $handler2): void { $handler2($message); },

@@ -4,17 +4,20 @@ declare(strict_types=1);
 
 namespace AwdStudio\Query;
 
-use AwdStudio\Bus\Bus;
+use AwdStudio\Bus\Exception\NoHandlerDefined;
+use AwdStudio\Bus\MiddlewareBus;
 
-final class QueryBus extends Bus implements IQueryBus
+final class QueryBus extends MiddlewareBus implements IQueryBus
 {
     /**
      * {@inheritdoc}
      */
-    public function handle(object $query)
+    public function handle(object $query, ...$extraParams)
     {
-        $firstHandler = $this->doHandling($query);
+        foreach ($this->chain($query, ...$extraParams) as $chain) {
+            return $chain();
+        }
 
-        return $firstHandler->current();
+        throw new NoHandlerDefined($query);
     }
 }

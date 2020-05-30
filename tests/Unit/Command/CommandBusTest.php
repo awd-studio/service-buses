@@ -15,7 +15,7 @@ use Prophecy\Argument;
 /**
  * @coversDefaultClass \AwdStudio\Command\CommandBus
  */
-class CommandBusTest extends BusTestCase
+final class CommandBusTest extends BusTestCase
 {
     /** @var \AwdStudio\Command\CommandBus */
     private $instance;
@@ -50,17 +50,21 @@ class CommandBusTest extends BusTestCase
     public function testMustApplyAHandler(): void
     {
         $message = new class {
-            /** @var bool */
             public $isChanged = false;
         };
+
         $handler = static function (object $message): void { $message->isChanged = true; };
 
         $this->handlersProphecy
-            ->get(Argument::exact($message))
+            ->has(Argument::exact(\get_class($message)))
+            ->willReturn(true);
+
+        $this->handlersProphecy
+            ->get(Argument::exact(\get_class($message)))
             ->willYield([$handler]);
 
         $this->middlewareProphecy
-            ->buildChain(Argument::exact($message), Argument::exact($handler))
+            ->buildChain(Argument::exact($handler), Argument::exact($message), Argument::type('array'))
             ->willReturn(static function () use ($message, $handler): void { $handler($message); });
 
         $this->instance->handle($message);
@@ -84,11 +88,15 @@ class CommandBusTest extends BusTestCase
         $handler2 = static function (object $message): void { $message->isCalled = true; };
 
         $this->handlersProphecy
-            ->get(Argument::exact($message))
+            ->has(Argument::exact(\get_class($message)))
+            ->willReturn(true);
+
+        $this->handlersProphecy
+            ->get(Argument::exact(\get_class($message)))
             ->willYield([$handler1, $handler2]);
 
         $this->middlewareProphecy
-            ->buildChain(Argument::exact($message), Argument::exact($handler1))
+            ->buildChain(Argument::type('callable'), Argument::exact($message), Argument::type('array'))
             ->willReturn(
                 static function () use ($message, $handler1): void { $handler1($message); },
                 static function () use ($message, $handler2): void { $handler2($message); }
@@ -107,22 +115,9 @@ class CommandBusTest extends BusTestCase
     {
         $this->handlersProphecy
             ->get(Argument::any())
-            ->willThrow(NoHandlerDefined::class);
+            ->willYield([]);
 
         $this->expectException(NoHandlerDefined::class);
-
-        $this->instance->handle(new \stdClass());
-    }
-
-    /**
-     * @covers ::handle
-     */
-    public function testMustDoNothingIfHandlersNotThrowingAnExceptionAndThereAreNoHandlers(): void
-    {
-        $this->handlersProphecy
-            ->get(Argument::any())
-            ->willYield([])
-            ->shouldBeCalledOnce();
 
         $this->instance->handle(new \stdClass());
     }

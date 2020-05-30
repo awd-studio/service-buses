@@ -4,16 +4,22 @@ declare(strict_types=1);
 
 namespace AwdStudio\Command;
 
-use AwdStudio\Bus\Bus;
+use AwdStudio\Bus\Exception\NoHandlerDefined;
+use AwdStudio\Bus\MiddlewareBus;
 
-final class CommandBus extends Bus implements ICommandBus
+final class CommandBus extends MiddlewareBus implements ICommandBus
 {
     /**
      * {@inheritdoc}
      */
-    public function handle(object $command): void
+    public function handle(object $command, ...$extraParams): void
     {
-        $firstHandler = $this->doHandling($command);
-        $firstHandler->current();
+        foreach ($this->chain($command, ...$extraParams) as $chain) {
+            $chain();
+
+            return;
+        }
+
+        throw new NoHandlerDefined($command);
     }
 }

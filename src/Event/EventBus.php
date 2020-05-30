@@ -4,20 +4,17 @@ declare(strict_types=1);
 
 namespace AwdStudio\Event;
 
-use AwdStudio\Bus\Bus;
+use AwdStudio\Bus\MiddlewareBus;
 
-final class EventBus extends Bus implements IEventBus
+final class EventBus extends MiddlewareBus implements IEventBus
 {
     /**
      * {@inheritdoc}
      */
-    public function handle(object $event): void
+    public function handle(object $event, ...$extraParams): void
     {
-        if (true === $this->handlers->has($event)) {
-            $handlers = $this->doHandling($event);
-            while ($handlers->valid()) {
-                $handlers->next();
-            }
+        foreach ($this->chain($event, ...$extraParams) as $chain) {
+            $chain();
         }
     }
 }

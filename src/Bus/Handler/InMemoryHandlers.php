@@ -4,19 +4,18 @@ declare(strict_types=1);
 
 namespace AwdStudio\Bus\Handler;
 
-use AwdStudio\Bus\Exception\NoHandlerDefined;
-use AwdStudio\Bus\Handlers;
-
 /**
  * @psalm-external-mutation-free
+ *
+ * @implements ExternalHandlers<callable(object $message, mixed ...$extraParams): mixed>
  */
-final class InMemoryHandlers implements Handlers
+final class InMemoryHandlers implements ExternalHandlers
 {
     /**
      * @var array
      *
-     * @psalm-var   array<class-string, array<array-key, callable>>
-     * @phpstan-var array<class-string, array<array-key, callable>>
+     * @psalm-var   array<class-string, list<callable(object $message, mixed ...$extraParams): mixed>>
+     * @phpstan-var array<class-string, list<callable(object $message, mixed ...$extraParams): mixed>>
      */
     private $handlers;
 
@@ -26,64 +25,26 @@ final class InMemoryHandlers implements Handlers
     }
 
     /**
-     * Assigns a handler to a particular message.
-     *
-     * @param string   $message
-     * @param callable $handler
-     *
-     * @psalm-param   class-string $message
-     * @phpstan-param class-string $message
+     * {@inheritdoc}
      */
-    public function add(string $message, callable $handler): void
+    public function add(string $messageId, callable $handler): void
     {
-        $this->handlers[$message][] = $handler;
-    }
-
-    /**
-     * Returns all configured state.
-     *
-     * @return array
-     *
-     * @psalm-return   array<class-string, array<array-key, callable>>
-     * @phpstan-return array<class-string, array<array-key, callable>>
-     */
-    public function export(): array
-    {
-        return $this->handlers;
+        $this->handlers[$messageId][] = $handler;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function has(object $message): bool
+    public function has(string $messageId): bool
     {
-        return !empty($this->handlers[\get_class($message)]);
+        return !empty($this->handlers[$messageId]);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function get(object $message): \Traversable
+    public function get(string $messageId): iterable
     {
-        if (false === $this->has($message)) {
-            throw new NoHandlerDefined($message);
-        }
-
-        return $this->resolveHandlerGenerator($message);
-    }
-
-    /**
-     * Yields a list of handlers.
-     *
-     * @param object $message
-     *
-     * @return \Generator<callable>
-     *
-     * @psalm-return   \Generator<array-key, callable>
-     * @phpstan-return \Generator<array-key, callable>
-     */
-    private function resolveHandlerGenerator(object $message): \Generator
-    {
-        yield from $this->handlers[\get_class($message)];
+        yield from $this->handlers[$messageId] ?? [];
     }
 }
