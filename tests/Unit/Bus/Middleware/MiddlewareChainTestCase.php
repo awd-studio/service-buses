@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace AwdStudio\Tests\Unit\Bus\Middleware;
 
 use AwdStudio\Bus\Handlers;
-use AwdStudio\Bus\MiddlewareChain;
+use AwdStudio\Bus\Middleware\MiddlewareChain;
 use AwdStudio\Tests\BusTestCase;
 
 abstract class MiddlewareChainTestCase extends BusTestCase
 {
-    /** @var \AwdStudio\Bus\MiddlewareChain */
+    /** @var \AwdStudio\Bus\Middleware\MiddlewareChain */
     protected $instance;
 
     /** @var \AwdStudio\Bus\Handlers|\Prophecy\Prophecy\ObjectProphecy */

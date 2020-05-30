@@ -35,7 +35,7 @@
 <?php
 
 use AwdStudio\Bus\Handler\InMemoryHandlers;
-use AwdStudio\Bus\MiddlewareChain;
+use AwdStudio\Bus\Middleware\MiddlewareChain;
 use AwdStudio\Command\CommandBus;
 
 class MyCommand {

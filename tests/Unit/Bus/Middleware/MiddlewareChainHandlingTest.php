@@ -7,7 +7,7 @@ namespace AwdStudio\Tests\Unit\Bus\Middleware;
 use Prophecy\Argument;
 
 /**
- * @coversDefaultClass \AwdStudio\Bus\MiddlewareChain
+ * @coversDefaultClass \AwdStudio\Bus\Middleware\MiddlewareChain
  */
 final class MiddlewareChainHandlingTest extends MiddlewareChainTestCase
 {

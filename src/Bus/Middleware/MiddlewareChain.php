@@ -2,7 +2,10 @@
 
 declare(strict_types=1);
 
-namespace AwdStudio\Bus;
+namespace AwdStudio\Bus\Middleware;
+
+use AwdStudio\Bus\Handlers;
+use AwdStudio\Bus\Middleware;
 
 final class MiddlewareChain implements Middleware
 {

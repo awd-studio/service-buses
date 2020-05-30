@@ -7,7 +7,7 @@ namespace AwdStudio\Tests\Unit\Bus\Middleware;
 use AwdStudio\Bus\Middleware;
 
 /**
- * @coversDefaultClass \AwdStudio\Bus\MiddlewareChain
+ * @coversDefaultClass \AwdStudio\Bus\Middleware\MiddlewareChain
  */
 final class MiddlewareChainInstantiatingTest extends MiddlewareChainTestCase
 {

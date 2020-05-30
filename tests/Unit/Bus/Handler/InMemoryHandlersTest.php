@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace AwdStudio\Tests\Unit\AwdStudio\Bus\Handler;
+namespace AwdStudio\Tests\Unit\Bus\Handler;
 
 use AwdStudio\Bus\Exception\NoHandlerDefined;
 use AwdStudio\Bus\Handler\InMemoryHandlers;
