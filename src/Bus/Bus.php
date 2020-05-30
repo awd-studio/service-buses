@@ -10,7 +10,7 @@ abstract class Bus
     protected $handlers;
 
     /** @var \AwdStudio\Bus\Middleware */
-    private $middleware;
+    protected $middleware;
 
     public function __construct(Handlers $handlers, Middleware $middleware)
     {

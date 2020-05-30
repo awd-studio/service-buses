@@ -103,8 +103,7 @@ class QueryBusTest extends BusTestCase
             ->willReturn(
                 static function () use ($message, $handler1): int { return $handler1($message); },
                 static function () use ($message, $handler2): int { return $handler2($message); }
-            )
-            ->shouldBeCalledOnce();
+            );
 
         $result = $this->instance->handle($message);
 

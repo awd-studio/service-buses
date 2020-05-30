@@ -92,8 +92,7 @@ class CommandBusTest extends BusTestCase
             ->willReturn(
                 static function () use ($message, $handler1): void { $handler1($message); },
                 static function () use ($message, $handler2): void { $handler2($message); }
-            )
-            ->shouldBeCalledOnce();
+            );
 
         $this->instance->handle($message);
 
