@@ -37,7 +37,7 @@ final class BusTest extends BusTestCase
              *
              * @return mixed|null
              */
-            public function test(object $message)/*: \Generator*/
+            public function test(object $message)
             {
                 $result = null;
                 foreach ($this->doHandling($message) as $time) {
