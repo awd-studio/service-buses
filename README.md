@@ -23,142 +23,40 @@
 
 ## Requirements:
 
-- PHP v7.1+
+- PHP v7.3+
 - [Composer](https://getcomposer.org/) package manager
-- [PSR-11](https://github.com/php-fig/container)\-compatible container
+- [PSR-11](https://github.com/php-fig/container) - compatible container (*optional*)
 
 
 ## Usage:
 
-### Configuration:
+### Command bus:
 ```php
 <?php
 
-use AwdStudio\Bus\Implementation\Handling\ContainerHandlerLocator;
-use AwdStudio\Bus\Implementation\Handling\InMemoryHandlerLocator;
-use AwdStudio\Bus\Implementation\Middleware\ChannelChain;
-use AwdStudio\Bus\Implementation\Middleware\Chain;
+use AwdStudio\Bus\Handler\InMemoryHandlers;
+use AwdStudio\Bus\MiddlewareChain;
+use AwdStudio\Command\CommandBus;
 
-// Middleware also must be invokable
-class MyMiddleware
-{
-    // You can use types to define processing command
-    public function __invoke(MyCommand $command, callable $next): void
-    {
-        // Preprocess the command ...
-        $result = $next($command);
-        // Or postprocess the command ...
-
-        return $result; // Return the result
-    }    
+class MyCommand {
+    // Messages might be any of PHP class.
+    // No any of implementation or extending required.
 }
 
+$handlers = new InMemoryHandlers();
+$handlers->add(MyCommand::class, function (MyCommand $command): void {});
 
-// You can use predefined handler locators
-$handlers = new InMemoryHandlerLocator([
-    MyCommand::class => new MyCommandHandler() // Assign a handler to the command it manages
-]);
+$middleware = new InMemoryHandlers();
+$middleware->add(MyCommand::class, function (MyCommand $command, callable $next): void {
+    // Do whatever you need before the handler
+    $next($command);
+    // Or after...
+});
+$chain = new MiddlewareChain($middleware);
 
-// There also is a handler locator to work with a service-container
-$handlers = new ContainerHandlerLocator($myPsr11Container);
-$handlers->add(MyCommand::class, MyCommandHandler::class);
+$bus = new CommandBus($handlers, $chain);
 
-
-// To fill middleware there are also a couple of predefined options
-
-// A simple middleware chain:
-$middlewareChain = new Chain();
-$middlewareChain->add(new MyMiddleware());
-
-// A chain which processes middleware by channels (by processed command):
-$middlewareChain = new ChannelChain();
-$middlewareChain->add(new MyMiddleware()); // Will be called only for the MyCommand
-```
------
-
-### Command Bus:
-```php
-<?php
-
-use AwdStudio\Bus\CommandBus\CommandBus;
-
-// Create any command you need
-class MyCommand 
-{
-    public $value;
-}
-
-
-// Handlers supposed to be invokable
-class MyCommandHandler 
-{
-    // You can use types to define processing command
-    public function __invoke(MyCommand $command): void
-    {
-        // Process the command ...
-    }    
-}
-
-$commandBus = new CommandBus($handlers, $middlewareChain);
-$commandBus->handle(new MyCommand());
-```
-
------
-
-### Query Bus:
-```php
-<?php
-
-use AwdStudio\Bus\QueryBus\QueryBus;
-
-// Create any query you need
-class MyQuery
-{
-    public $value;
-}
-
-
-// Handlers supposed to be invokable
-class MyQueryHandler 
-{
-    // You can use types to define processing query
-    public function __invoke(MyQuery $query): array
-    {
-        // Process the query and return the result ...
-    }    
-}
-
-$queryBus = new QueryBus($handlers, $middlewareChain);
-$result = $queryBus->handle(new MyQuery());
-```
-
------
-
-### Event Bus:
-```php
-<?php
-
-use AwdStudio\Bus\EventBus\EventBus;
-
-// Create any event you need
-class MyEvent 
-{
-    public $value;
-}
-
-
-// Handlers supposed to be invokable
-class MyEventHandler 
-{
-    // You can use types to define processing event
-    public function __invoke(MyEvent $event): void
-    {
-        // Process the event ...
-    }    
-}
-
-$eventBus = new EventBus($handlers, $middlewareChain);
-$eventBus->handle(new MyEvent());
+$bus->handle(new MyCommand());
 ```
 
 -----
