@@ -14,7 +14,7 @@ final class QueryBus extends MiddlewareBus implements IQueryBus
      */
     public function handle(object $query, ...$extraParams)
     {
-        foreach ($this->chain($query, ...$extraParams) as $chain) {
+        foreach ($this->chains($query, ...$extraParams) as $chain) {
             return $chain();
         }
 

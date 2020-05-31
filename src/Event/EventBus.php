@@ -13,7 +13,7 @@ final class EventBus extends MiddlewareBus implements IEventBus
      */
     public function handle(object $event, ...$extraParams): void
     {
-        foreach ($this->chain($event, ...$extraParams) as $chain) {
+        foreach ($this->chains($event, ...$extraParams) as $chain) {
             $chain();
         }
     }

@@ -43,7 +43,7 @@ final class MiddlewareBusTest extends BusTestCase
              */
             public function test(object $message, ...$extra): iterable
             {
-                yield from $this->chain($message, ...$extra);
+                yield from $this->chains($message, ...$extra);
             }
         };
     }
@@ -57,7 +57,7 @@ final class MiddlewareBusTest extends BusTestCase
     }
 
     /**
-     * @covers ::chain
+     * @covers ::chains
      */
     public function testMustBuildAChainWithAHandler(): void
     {
@@ -78,7 +78,7 @@ final class MiddlewareBusTest extends BusTestCase
     }
 
     /**
-     * @covers ::chain
+     * @covers ::chains
      */
     public function testMustApplyEachOfHandlersDuringTheHandling(): void
     {
