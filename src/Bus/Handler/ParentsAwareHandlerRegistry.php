@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AwdStudio\Bus\Handler;
 
 use AwdStudio\Bus\Registry\ImplementationParser;
+use AwdStudio\Bus\Registry\ReflectionImplementationParser;
 
 /**
  * @implements HandlerRegistry<callable(object $message, mixed ...$extraParams): mixed>
@@ -20,7 +21,7 @@ final class ParentsAwareHandlerRegistry implements HandlerRegistry
     private $handlers;
 
     /** @var \AwdStudio\Bus\Registry\ImplementationParser */
-    private $reflector;
+    private $parser;
 
     /**
      * @var array
@@ -31,16 +32,16 @@ final class ParentsAwareHandlerRegistry implements HandlerRegistry
     private $parsedMap;
 
     /**
-     * @param \AwdStudio\Bus\Handler\HandlerRegistry       $handlers
-     * @param \AwdStudio\Bus\Registry\ImplementationParser $reflector
+     * @param \AwdStudio\Bus\Handler\HandlerRegistry            $handlers
+     * @param \AwdStudio\Bus\Registry\ImplementationParser|null $parser
      *
      * @psalm-param   HandlerRegistry<callable(object $message, mixed ...$extraParams): mixed> $handlers
      * @phpstan-param HandlerRegistry<callable(object $message, mixed ...$extraParams): mixed> $handlers
      */
-    public function __construct(HandlerRegistry $handlers, ImplementationParser $reflector)
+    public function __construct(HandlerRegistry $handlers, ?ImplementationParser $parser = null)
     {
         $this->handlers = $handlers;
-        $this->reflector = $reflector;
+        $this->parser = $parser ?? new ReflectionImplementationParser();
         $this->parsedMap = [];
     }
 
@@ -103,7 +104,7 @@ final class ParentsAwareHandlerRegistry implements HandlerRegistry
     private function parse(string $messageId): array
     {
         if (false === isset($this->parsedMap[$messageId])) {
-            $this->parsedMap[$messageId] = $this->reflector->parse($messageId);
+            $this->parsedMap[$messageId] = $this->parser->parse($messageId);
         }
 
         return $this->parsedMap[$messageId];

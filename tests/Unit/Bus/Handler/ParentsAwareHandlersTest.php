@@ -47,6 +47,14 @@ final class ParentsAwareHandlersTest extends BusTestCase
     }
 
     /**
+     * @covers ::__construct
+     */
+    public function testMustAllowNotToPassReflector(): void
+    {
+        $this->assertNotNull(new ParentsAwareHandlerRegistry($this->handlersRegistryProphesy->reveal()));
+    }
+
+    /**
      * @covers ::register
      */
     public function testMustRegisterViaHandlers(): void
