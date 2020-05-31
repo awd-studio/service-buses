@@ -22,7 +22,7 @@ final class MiddlewareChainHandlingTest extends MiddlewareChainTestCase
 
         $handler = static function (object $message): int { return 42; };
 
-        $chain = $this->instance->buildChain($handler, new \stdClass());
+        $chain = $this->instance->buildChain(new \stdClass(), $handler);
 
         $this->assertSame(42, $chain());
     }
@@ -37,7 +37,7 @@ final class MiddlewareChainHandlingTest extends MiddlewareChainTestCase
             public $i = 0;
         };
 
-        $middleware = static function (callable $next, object $message): int
+        $middleware = static function (object $message, callable $next): int
         {
             ++$message->i;
 
@@ -50,7 +50,7 @@ final class MiddlewareChainHandlingTest extends MiddlewareChainTestCase
             ->get(Argument::exact(\get_class($message)))
             ->willYield([$middleware]);
 
-        $chain = $this->instance->buildChain($handler, $message);
+        $chain = $this->instance->buildChain($message, $handler);
 
         $this->assertSame(2, $chain());
         $this->assertSame(2, $message->i);
@@ -66,7 +66,7 @@ final class MiddlewareChainHandlingTest extends MiddlewareChainTestCase
             public $i = 0;
         };
 
-        $middleware = static function (callable $next, object $message): int
+        $middleware = static function (object $message, callable $next): int
         {
             ++$message->i;
             $result = $next();
@@ -81,7 +81,7 @@ final class MiddlewareChainHandlingTest extends MiddlewareChainTestCase
             ->get(Argument::exact(\get_class($message)))
             ->willYield([$middleware]);
 
-        $chain = $this->instance->buildChain($handler, $message);
+        $chain = $this->instance->buildChain($message, $handler);
 
         $this->assertSame(2, $chain());
         $this->assertSame(3, $message->i);
@@ -99,7 +99,7 @@ final class MiddlewareChainHandlingTest extends MiddlewareChainTestCase
 
         $message = new \stdClass();
 
-        $middleware = static function (callable $next, object $message): string
+        $middleware = static function (object $message, callable $next): string
         {
             return 'bar';
         };
@@ -108,7 +108,7 @@ final class MiddlewareChainHandlingTest extends MiddlewareChainTestCase
             ->get(Argument::exact(\get_class($message)))
             ->willYield([$middleware]);
 
-        $chain = $this->instance->buildChain($handler, $message);
+        $chain = $this->instance->buildChain($message, $handler);
 
         $this->assertSame('bar', $chain());
     }

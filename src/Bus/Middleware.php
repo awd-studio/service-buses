@@ -21,5 +21,5 @@ interface Middleware
      * @psalm-return   callable(): mixed
      * @phpstan-return callable(): mixed
      */
-    public function buildChain(callable $handler, object $message, array $extraParams = []): callable;
+    public function buildChain(object $message, callable $handler, array $extraParams = []): callable;
 }

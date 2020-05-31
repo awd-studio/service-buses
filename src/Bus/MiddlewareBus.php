@@ -44,7 +44,7 @@ abstract class MiddlewareBus
     protected function chain(object $message, ...$extraParams): iterable
     {
         foreach ($this->handlers->get(\get_class($message)) as $handler) {
-            yield $this->middleware->buildChain($handler, $message, $extraParams);
+            yield $this->middleware->buildChain($message, $handler, $extraParams);
         }
     }
 }

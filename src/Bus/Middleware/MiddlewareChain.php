@@ -12,16 +12,16 @@ final class MiddlewareChain implements Middleware
     /**
      * @var \AwdStudio\Bus\HandlerLocator
      *
-     * @psalm-var   HandlerLocator<callable(callable $next, object $message, mixed ...$extraParams): mixed>
-     * @phpstan-var HandlerLocator<callable(callable $next, object $message, mixed ...$extraParams): mixed>
+     * @psalm-var   HandlerLocator<callable(object $message, callable $next, mixed ...$extraParams): mixed>
+     * @phpstan-var HandlerLocator<callable(object $message, callable $next, mixed ...$extraParams): mixed>
      */
     private $middleware;
 
     /**
      * @param \AwdStudio\Bus\HandlerLocator $handlers
      *
-     * @psalm-param   HandlerLocator<callable(callable $next, object $message, mixed ...$extraParams): mixed> $handlers
-     * @phpstan-param HandlerLocator<callable(callable $next, object $message, mixed ...$extraParams): mixed> $handlers
+     * @psalm-param   HandlerLocator<callable(object $message, callable $next, mixed ...$extraParams): mixed> $handlers
+     * @phpstan-param HandlerLocator<callable(object $message, callable $next, mixed ...$extraParams): mixed> $handlers
      */
     public function __construct(HandlerLocator $handlers)
     {
@@ -31,15 +31,15 @@ final class MiddlewareChain implements Middleware
     /**
      * {@inheritdoc}
      */
-    public function buildChain(callable $handler, object $message, array $extraParams = []): callable
+    public function buildChain(object $message, callable $handler, array $extraParams = []): callable
     {
         $next = /** @return mixed */ static function () use ($handler, $message, $extraParams) {
             return $handler($message, ...$extraParams);
         };
 
         foreach ($this->middleware->get(\get_class($message)) as $item) {
-            $next = /** @return mixed */ static function () use ($item, $next, $message, $extraParams) {
-                return $item($next, $message, ...$extraParams);
+            $next = /** @return mixed */ static function () use ($item, $message, $next, $extraParams) {
+                return $item($message, $next, ...$extraParams);
             };
         }
 

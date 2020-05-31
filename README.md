@@ -13,7 +13,6 @@
 #### Contents:
 - [Requirements](#requirements)
 - [Usage](#usage)
-  - [Global configuration](#configuration)
   - [Command Bus](#command-bus)
   - [Query Bus](#query-bus)
   - [Event Bus](#event-bus)
@@ -44,12 +43,15 @@ class MyCommand {
 }
 
 $handlers = new InMemoryHandlerLocator();
+// Register a handler. It can be any callable thing.
 $handlers->add(MyCommand::class, static function (MyCommand $command): void {});
 
 $middleware = new InMemoryHandlerLocator();
+// Register a middleware. It can be any callable thing as well. 
+// The only thing is that it gets a callback with next middleware as a 2nd param.
 $middleware->add(MyCommand::class, static function (MyCommand $command, callable $next): void {
-    // Do whatever you need before the handler
-    $next($command);
+    // Do whatever you need before the handler.
+    $next(); // Just dont forget to call a next callback.
     // Or after...
 });
 $chain = new MiddlewareChain($middleware);

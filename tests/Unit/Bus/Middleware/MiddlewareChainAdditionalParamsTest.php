@@ -29,7 +29,7 @@ final class MiddlewareChainAdditionalParamsTest extends MiddlewareChainTestCase
             ->get(Argument::exact(\get_class($message)))
             ->willYield([]);
 
-        $chain = $this->instance->buildChain($handler, $message, [42, 'baz']);
+        $chain = $this->instance->buildChain($message, $handler, [42, 'baz']);
 
         $this->assertSame('foo42baz', $chain());
     }
@@ -48,14 +48,14 @@ final class MiddlewareChainAdditionalParamsTest extends MiddlewareChainTestCase
             public $foo = 'foo';
         };
 
-        $middleware1 = static function (callable $next, object $message, int $bar, string $baz): string
+        $middleware1 = static function (object $message, callable $next, int $bar, string $baz): string
         {
             $result = $next();
 
             return $result . 'qoo' . $bar;
         };
 
-        $middleware2 = static function (callable $next, object $message, int $bar, string $baz): string
+        $middleware2 = static function (object $message, callable $next, int $bar, string $baz): string
         {
             $result = $next();
 
@@ -66,7 +66,7 @@ final class MiddlewareChainAdditionalParamsTest extends MiddlewareChainTestCase
             ->get(\get_class($message))
             ->willYield([$middleware1, $middleware2]);
 
-        $chain = $this->instance->buildChain($handler, $message, [42, 'baz']);
+        $chain = $this->instance->buildChain($message, $handler, [42, 'baz']);
 
         $this->assertSame('foo42bazqoo42qooooobaz', $chain());
     }

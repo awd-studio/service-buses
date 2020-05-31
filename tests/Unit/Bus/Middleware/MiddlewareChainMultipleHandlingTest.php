@@ -30,21 +30,21 @@ final class MiddlewareChainMultipleHandlingTest extends MiddlewareChainTestCase
             public $h;
         };
 
-        $middleware1 = static function (callable $next, object $message): void
+        $middleware1 = static function (object $message, callable $next): void
         {
             $message->m1 = 'foo';
 
             $next();
         };
 
-        $middleware2 = static function (callable $next, object $message): void
+        $middleware2 = static function (object $message, callable $next): void
         {
             $message->m2 = 'bar';
 
             $next();
         };
 
-        $middleware3 = static function (callable $next, object $message): void
+        $middleware3 = static function (object $message, callable $next): void
         {
             $message->m3 = 'baz';
 
@@ -57,7 +57,7 @@ final class MiddlewareChainMultipleHandlingTest extends MiddlewareChainTestCase
             ->get(Argument::exact(\get_class($message)))
             ->willYield([$middleware1, $middleware2, $middleware3]);
 
-        $chain = $this->instance->buildChain($handler, $message);
+        $chain = $this->instance->buildChain($message, $handler);
 
         $chain();
 

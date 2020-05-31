@@ -69,7 +69,7 @@ final class MiddlewareBusTest extends BusTestCase
             ->willYield([$handler]);
 
         $this->middlewareProphecy
-            ->buildChain(Argument::type('callable'), Argument::exact($message), Argument::any())
+            ->buildChain(Argument::exact($message), Argument::type('callable'), Argument::any())
             ->willReturn(static function () use ($message, $handler): int { return $handler($message); });
 
         $firstResult = $this->instance->test($message);
@@ -101,7 +101,7 @@ final class MiddlewareBusTest extends BusTestCase
             ->willYield([$handler1, $handler2, $handler3]);
 
         $this->middlewareProphecy
-            ->buildChain(Argument::type('callable'), Argument::exact($message), Argument::any())
+            ->buildChain(Argument::exact($message), Argument::type('callable'), Argument::any())
             ->willReturn(
                 static function () use ($message, $handler1): void { $handler1($message); },
                 static function () use ($message, $handler2): void { $handler2($message); },
