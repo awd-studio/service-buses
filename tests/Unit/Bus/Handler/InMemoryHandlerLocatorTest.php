@@ -4,23 +4,23 @@ declare(strict_types=1);
 
 namespace AwdStudio\Tests\Unit\Bus\Handler;
 
-use AwdStudio\Bus\Handler\InMemoryHandlers;
-use AwdStudio\Bus\Handlers;
+use AwdStudio\Bus\Handler\InMemoryHandlerLocator;
+use AwdStudio\Bus\HandlerLocator;
 use AwdStudio\Tests\BusTestCase;
 
 /**
- * @coversDefaultClass \AwdStudio\Bus\Handler\InMemoryHandlers
+ * @coversDefaultClass \AwdStudio\Bus\Handler\InMemoryHandlerLocator
  */
-final class InMemoryHandlersTest extends BusTestCase
+final class InMemoryHandlerLocatorTest extends BusTestCase
 {
-    /** @var \AwdStudio\Bus\Handler\InMemoryHandlers */
+    /** @var \AwdStudio\Bus\Handler\InMemoryHandlerLocator */
     private $instance;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->instance = new InMemoryHandlers();
+        $this->instance = new InMemoryHandlerLocator();
     }
 
     /**
@@ -28,7 +28,7 @@ final class InMemoryHandlersTest extends BusTestCase
      */
     public function testMustImplementAHandlers(): void
     {
-        $this->assertInstanceOf(Handlers::class, $this->instance);
+        $this->assertInstanceOf(HandlerLocator::class, $this->instance);
     }
 
     /**
@@ -100,6 +100,6 @@ final class InMemoryHandlersTest extends BusTestCase
     {
         $handlers = $this->instance->get(\stdClass::class);
 
-        $this->assertEmpty($handlers instanceof \Traversable ? \iterator_to_array($handlers) : $handlers);
+        $this->assertEmpty(\iterator_to_array($handlers));
     }
 }

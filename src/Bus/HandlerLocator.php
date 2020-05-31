@@ -8,8 +8,22 @@ namespace AwdStudio\Bus;
  * @psalm-template   TCallback of callable
  * @phpstan-template TCallback of callable
  */
-interface Handlers
+interface HandlerLocator
 {
+    /**
+     * Assigns a handler to a particular message.
+     *
+     * @param string   $messageId
+     * @param callable $handler
+     *
+     * @psalm-param   class-string $messageId
+     * @phpstan-param class-string $messageId
+     *
+     * @psalm-param   TCallback $handler
+     * @phpstan-param TCallback $handler
+     */
+    public function add(string $messageId, callable $handler): void;
+
     /**
      * Checks if there are handlers for particular message.
      *
@@ -27,13 +41,13 @@ interface Handlers
      *
      * @param string $messageId
      *
-     * @return iterable<callable>|callable[]
+     * @return \Traversable<callable>|callable[]
      *
      * @psalm-param    class-string $messageId
      * @phpstan-param  class-string $messageId
      *
-     * @psalm-return   iterable<array-key, TCallback>
-     * @phpstan-return iterable<array-key, TCallback>
+     * @psalm-return   \Traversable<array-key, TCallback>
+     * @phpstan-return \Traversable<array-key, TCallback>
      */
-    public function get(string $messageId): iterable;
+    public function get(string $messageId): \Traversable;
 }

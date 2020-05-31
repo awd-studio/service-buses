@@ -4,18 +4,92 @@ declare(strict_types=1);
 
 namespace AwdStudio\Bus\Handler;
 
-interface PsrContainerHandlerRegistry
+use AwdStudio\Bus\Exception\InvalidHandler;
+use AwdStudio\Bus\HandlerLocator;
+use Psr\Container\ContainerInterface;
+
+/**
+ * @implements HandlerRegistry<callable(object $message, mixed ...$extraParams): mixed>
+ */
+final class PsrContainerHandlerRegistry implements HandlerRegistry
 {
+    /** @var \Psr\Container\ContainerInterface */
+    private $serviceLocator;
+
     /**
-     * Registers a handler from a PSR-container as a message handler.
+     * @var \AwdStudio\Bus\HandlerLocator
      *
-     * @param string $messageId
-     * @param string $handlerId
-     *
-     * @throws \AwdStudio\Bus\Exception\InvalidHandler
-     *
-     * @psalm-param   class-string $messageId
-     * @phpstan-param class-string $messageId
+     * @psalm-var   HandlerLocator<callable(object $message, mixed ...$extraParams): mixed>
+     * @phpstan-var HandlerLocator<callable(object $message, mixed ...$extraParams): mixed>
      */
-    public function register(string $messageId, string $handlerId): void;
+    private $dynamicHandlers;
+
+    /**
+     * @var array
+     *
+     * @psalm-var   array<class-string, array<array-key, string>>
+     * @phpstan-var array<class-string, array<array-key, string>>
+     */
+    private $containerHandlers;
+
+    /**
+     * @param \Psr\Container\ContainerInterface  $serviceLocator
+     * @param \AwdStudio\Bus\HandlerLocator|null $dynamicHandlers
+     *
+     * @psalm-param   HandlerLocator<callable(object $message, mixed ...$extraParams): mixed>|null $dynamicHandlers
+     * @phpstan-param HandlerLocator<callable(object $message, mixed ...$extraParams): mixed>|null $dynamicHandlers
+     */
+    public function __construct(ContainerInterface $serviceLocator, ?HandlerLocator $dynamicHandlers = null)
+    {
+        $this->serviceLocator = $serviceLocator;
+        $this->dynamicHandlers = $dynamicHandlers ?? new InMemoryHandlerLocator();
+        $this->containerHandlers = [];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function register(string $messageId, string $handlerId): void
+    {
+        if (false === $this->serviceLocator->has($handlerId)) {
+            throw new InvalidHandler(
+                \sprintf('There is no registered services such a "%s" to handle a "%s" message', $handlerId, $messageId)
+            );
+        }
+
+        $this->containerHandlers[$messageId][] = $handlerId;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function add(string $messageId, callable $handler): void
+    {
+        $this->dynamicHandlers->add($messageId, $handler);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function has(string $messageId): bool
+    {
+        return $this->dynamicHandlers->has($messageId) || !empty($this->containerHandlers[$messageId]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function get(string $messageId): \Traversable
+    {
+        if (true === $this->dynamicHandlers->has($messageId)) {
+            yield from $this->dynamicHandlers->get($messageId);
+        }
+
+        if (false === empty($this->containerHandlers[$messageId])) {
+            $array_unique = \array_unique($this->containerHandlers[$messageId]);
+            foreach ($array_unique as $handlerId) {
+                yield $this->serviceLocator->get($handlerId);
+            }
+        }
+    }
 }

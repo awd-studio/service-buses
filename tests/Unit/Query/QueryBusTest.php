@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace AwdStudio\Tests\Unit\Query;
 
 use AwdStudio\Bus\Exception\NoHandlerDefined;
-use AwdStudio\Bus\Handlers;
+use AwdStudio\Bus\HandlerLocator;
 use AwdStudio\Bus\Middleware;
 use AwdStudio\Query\IQueryBus;
 use AwdStudio\Query\QueryBus;
@@ -20,7 +20,7 @@ final class QueryBusTest extends BusTestCase
     /** @var \AwdStudio\Query\QueryBus */
     private $instance;
 
-    /** @var \AwdStudio\Bus\Handlers|\Prophecy\Prophecy\ObjectProphecy */
+    /** @var \AwdStudio\Bus\HandlerLocator|\Prophecy\Prophecy\ObjectProphecy */
     private $handlersProphecy;
 
     /** @var \AwdStudio\Bus\Middleware|\Prophecy\Prophecy\ObjectProphecy */
@@ -30,7 +30,7 @@ final class QueryBusTest extends BusTestCase
     {
         parent::setUp();
 
-        $this->handlersProphecy = $this->prophesize(Handlers::class);
+        $this->handlersProphecy = $this->prophesize(HandlerLocator::class);
         $this->middlewareProphecy = $this->prophesize(Middleware::class);
 
         $this->instance = new QueryBus($this->handlersProphecy->reveal(), $this->middlewareProphecy->reveal());

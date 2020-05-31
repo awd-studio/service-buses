@@ -7,10 +7,10 @@ namespace AwdStudio\Bus;
 abstract class MiddlewareBus
 {
     /**
-     * @var \AwdStudio\Bus\Handlers
+     * @var \AwdStudio\Bus\HandlerLocator
      *
-     * @psalm-var   Handlers<callable(object $message, mixed ...$extraParams): mixed>
-     * @phpstan-var Handlers<callable(object $message, mixed ...$extraParams): mixed>
+     * @psalm-var   HandlerLocator<callable(object $message, mixed ...$extraParams): mixed>
+     * @phpstan-var HandlerLocator<callable(object $message, mixed ...$extraParams): mixed>
      */
     protected $handlers;
 
@@ -18,13 +18,13 @@ abstract class MiddlewareBus
     protected $middleware;
 
     /**
-     * @param \AwdStudio\Bus\Handlers   $handlers
-     * @param \AwdStudio\Bus\Middleware $middleware
+     * @param \AwdStudio\Bus\HandlerLocator $handlers
+     * @param \AwdStudio\Bus\Middleware     $middleware
      *
-     * @psalm-param   Handlers<callable(object $message, mixed ...$extraParams): mixed> $handlers
-     * @phpstan-param Handlers<callable(object $message, mixed ...$extraParams): mixed> $handlers
+     * @psalm-param   HandlerLocator<callable(object $message, mixed ...$extraParams): mixed> $handlers
+     * @phpstan-param HandlerLocator<callable(object $message, mixed ...$extraParams): mixed> $handlers
      */
-    public function __construct(Handlers $handlers, Middleware $middleware)
+    public function __construct(HandlerLocator $handlers, Middleware $middleware)
     {
         $this->handlers = $handlers;
         $this->middleware = $middleware;

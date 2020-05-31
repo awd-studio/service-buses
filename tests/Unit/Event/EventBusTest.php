@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace AwdStudio\Tests\Unit\Event;
 
-use AwdStudio\Bus\Handlers;
+use AwdStudio\Bus\HandlerLocator;
 use AwdStudio\Bus\Middleware;
 use AwdStudio\Event\EventBus;
 use AwdStudio\Event\IEventBus;
@@ -19,7 +19,7 @@ final class EventBusTest extends BusTestCase
     /** @var \AwdStudio\Event\EventBus */
     private $instance;
 
-    /** @var \AwdStudio\Bus\Handlers|\Prophecy\Prophecy\ObjectProphecy */
+    /** @var \AwdStudio\Bus\HandlerLocator|\Prophecy\Prophecy\ObjectProphecy */
     private $handlersProphecy;
 
     /** @var \AwdStudio\Bus\Middleware|\Prophecy\Prophecy\ObjectProphecy */
@@ -29,7 +29,7 @@ final class EventBusTest extends BusTestCase
     {
         parent::setUp();
 
-        $this->handlersProphecy = $this->prophesize(Handlers::class);
+        $this->handlersProphecy = $this->prophesize(HandlerLocator::class);
         $this->middlewareProphecy = $this->prophesize(Middleware::class);
 
         $this->instance = new EventBus($this->handlersProphecy->reveal(), $this->middlewareProphecy->reveal());

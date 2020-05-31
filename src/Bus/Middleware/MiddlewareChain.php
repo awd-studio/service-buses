@@ -4,26 +4,26 @@ declare(strict_types=1);
 
 namespace AwdStudio\Bus\Middleware;
 
-use AwdStudio\Bus\Handlers;
+use AwdStudio\Bus\HandlerLocator;
 use AwdStudio\Bus\Middleware;
 
 final class MiddlewareChain implements Middleware
 {
     /**
-     * @var \AwdStudio\Bus\Handlers
+     * @var \AwdStudio\Bus\HandlerLocator
      *
-     * @psalm-var   Handlers<callable(callable $next, object $message, mixed ...$extraParams): mixed>
-     * @phpstan-var Handlers<callable(callable $next, object $message, mixed ...$extraParams): mixed>
+     * @psalm-var   HandlerLocator<callable(callable $next, object $message, mixed ...$extraParams): mixed>
+     * @phpstan-var HandlerLocator<callable(callable $next, object $message, mixed ...$extraParams): mixed>
      */
     private $middleware;
 
     /**
-     * @param \AwdStudio\Bus\Handlers $handlers
+     * @param \AwdStudio\Bus\HandlerLocator $handlers
      *
-     * @psalm-param   Handlers<callable(callable $next, object $message, mixed ...$extraParams): mixed> $handlers
-     * @phpstan-param Handlers<callable(callable $next, object $message, mixed ...$extraParams): mixed> $handlers
+     * @psalm-param   HandlerLocator<callable(callable $next, object $message, mixed ...$extraParams): mixed> $handlers
+     * @phpstan-param HandlerLocator<callable(callable $next, object $message, mixed ...$extraParams): mixed> $handlers
      */
-    public function __construct(Handlers $handlers)
+    public function __construct(HandlerLocator $handlers)
     {
         $this->middleware = $handlers;
     }

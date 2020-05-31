@@ -34,7 +34,7 @@
 ```php
 <?php
 
-use AwdStudio\Bus\Handler\InMemoryHandlers;
+use AwdStudio\Bus\Handler\InMemoryHandlerLocator;
 use AwdStudio\Bus\Middleware\MiddlewareChain;
 use AwdStudio\Command\CommandBus;
 
@@ -43,11 +43,11 @@ class MyCommand {
     // No any of implementation or extending required.
 }
 
-$handlers = new InMemoryHandlers();
-$handlers->add(MyCommand::class, function (MyCommand $command): void {});
+$handlers = new InMemoryHandlerLocator();
+$handlers->add(MyCommand::class, static function (MyCommand $command): void {});
 
-$middleware = new InMemoryHandlers();
-$middleware->add(MyCommand::class, function (MyCommand $command, callable $next): void {
+$middleware = new InMemoryHandlerLocator();
+$middleware->add(MyCommand::class, static function (MyCommand $command, callable $next): void {
     // Do whatever you need before the handler
     $next($command);
     // Or after...

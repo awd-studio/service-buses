@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace AwdStudio\Bus\Handler;
 
+use AwdStudio\Bus\HandlerLocator;
+
 /**
  * @psalm-external-mutation-free
  *
- * @implements ExternalHandlers<callable(object $message, mixed ...$extraParams): mixed>
+ * @implements HandlerLocator<callable(object $message, mixed ...$extraParams): mixed>
  */
-final class InMemoryHandlers implements ExternalHandlers
+final class InMemoryHandlerLocator implements HandlerLocator
 {
     /**
      * @var array
@@ -43,7 +45,7 @@ final class InMemoryHandlers implements ExternalHandlers
     /**
      * {@inheritdoc}
      */
-    public function get(string $messageId): iterable
+    public function get(string $messageId): \Traversable
     {
         yield from $this->handlers[$messageId] ?? [];
     }
