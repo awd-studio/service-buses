@@ -162,6 +162,26 @@ final class ParentsAwareHandlersTest extends BusTestCase
     }
 
     /**
+     * @covers ::get
+     */
+    public function testMustYieldAllHandlersFromHandlers(): void
+    {
+        $handler = static function () { };
+
+        $this->handlersRegistryProphesy
+            ->get(Argument::exact('Foo'))
+            ->willYield([$handler]);
+
+        $this->parserProphesy
+            ->parse(Argument::exact('Foo'))
+            ->willReturn([]);
+
+        $handlers = \iterator_to_array($this->instance->get('Foo'));
+
+        $this->assertContains($handler, $handlers);
+    }
+
+    /**
      * @covers ::parse
      */
     public function testMustParseImplementationsToYieldMoreHandlers(): void
