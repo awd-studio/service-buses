@@ -86,7 +86,7 @@ final class InMemoryHandlerLocatorTest extends BusTestCase
         $this->instance->add(\stdClass::class, $handler2);
         $this->instance->add(\stdClass::class, $handler3);
 
-        $handlers = $this->instance->get(\stdClass::class);
+        $handlers = \iterator_to_array($this->instance->get(\stdClass::class));
 
         $this->assertContains($handler1, $handlers);
         $this->assertContains($handler2, $handlers);

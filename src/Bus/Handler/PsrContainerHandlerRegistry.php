@@ -82,7 +82,9 @@ final class PsrContainerHandlerRegistry implements HandlerRegistry
     public function get(string $messageId): \Traversable
     {
         if (true === $this->dynamicHandlers->has($messageId)) {
-            yield from $this->dynamicHandlers->get($messageId);
+            foreach ($this->dynamicHandlers->get($messageId) as $handler) {
+                yield $handler;
+            }
         }
 
         if (false === empty($this->containerHandlers[$messageId])) {

@@ -84,7 +84,9 @@ final class ParentsAwareHandlerRegistry implements HandlerRegistry
     public function get(string $messageId): \Traversable
     {
         foreach (\array_merge([$messageId], $this->parse($messageId)) as $implementation) {
-            yield from $this->handlers->get($implementation);
+            foreach ($this->handlers->get($implementation) as $handler) {
+                yield $handler;
+            }
         }
     }
 

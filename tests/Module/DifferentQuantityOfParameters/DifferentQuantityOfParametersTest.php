@@ -78,7 +78,6 @@ class DifferentQuantityOfParametersTest extends BusTestCase
         $this->assertContains(MessageHandler::class, $message->visitors);
         $this->assertContains(MessageMiddleware1::class, $message->visitors);
         $this->assertContains(MessageMiddleware2::class, $message->visitors);
-        $this->assertContains(MessageMiddleware2::class, $message->visitors);
         $this->assertContains('customHandler', $message->visitors);
     }
 

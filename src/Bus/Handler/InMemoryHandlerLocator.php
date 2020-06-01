@@ -47,6 +47,8 @@ final class InMemoryHandlerLocator implements HandlerLocator
      */
     public function get(string $messageId): \Traversable
     {
-        yield from $this->handlers[$messageId] ?? [];
+        foreach ($this->handlers[$messageId] ?? [] as $handler) {
+            yield $handler;
+        }
     }
 }
