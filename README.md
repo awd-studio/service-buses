@@ -1,33 +1,44 @@
 # Service buses in PHP
 
-## A simple library, to implement CQRS pattern with PHP projects.
+## A simple library, to implement `CQRS`-ish pattern on PHP projects.
 
 [![Build Status](https://travis-ci.org/awd-studio/service-buses.svg?branch=master)](https://travis-ci.org/awd-studio/service-buses)
 [![Coverage Status](https://coveralls.io/repos/github/awd-studio/service-buses/badge.svg?branch=master)](https://coveralls.io/github/awd-studio/service-buses?branch=master)
 
-#### Advantages:
-- Provides such kind of service-buses as: `Command Bus`, `Query Bus` and `Event Bus`, for the CQRS pattern implementing.
-- In a single package.
-- Driven by a `Dependency Injection Container` (uses the standard - PSR-11).
+#### Features:
+- Nither messages nor handlers don't need to extend or implement any additional abstraction.
+- Supports `middleware` for handlers.
+- A handler (as well as middleware) can be any of `callable` item.
+- Handlers can subscribe on any of parents or implementations of an event.
+- Contains a decorator to register handles as services handled via `PSR-11`'s container.
+- Contains a decorator to autosubscribe handlers by a typehint on a message that it handles.
+- Provides ready to go bus patterns such a `Command Bus`, a `Query Bus` and an `Event Bus`.
+- Supports passing additional parameters to the buses to send to handlers.
 
 #### Contents:
-- [Requirements](#requirements)
-- [Usage](#usage)
+- [Get started](#get-started)
+- [Handling messages](#handling-messages)
+- [Predefined buses](#predefined-buses)
   - [Command Bus](#command-bus)
   - [Query Bus](#query-bus)
   - [Event Bus](#event-bus)
+- [Define custom bus](#define-custom-bus)
 - [Testing](#testing)
 
 -----
 
-## Requirements:
+## Get started:
 
-- PHP v7.3+
-- [Composer](https://getcomposer.org/) package manager
+### Requirenments:
+- PHP 7.3+
 - [PSR-11](https://github.com/php-fig/container) - compatible container (*optional*)
 
+### Install:
+```sh
+composer require awd-studio/service-buses
+```
 
-## Usage:
+## Predefined buses:
 
 ### Command bus:
 ```php
