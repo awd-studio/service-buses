@@ -45,7 +45,7 @@ final class InMemoryHandlerLocator implements HandlerLocator
     /**
      * {@inheritdoc}
      */
-    public function get(string $messageId): \Traversable
+    public function get(string $messageId): \Iterator
     {
         foreach ($this->handlers[$messageId] ?? [] as $handler) {
             yield $handler;

@@ -36,12 +36,12 @@ abstract class MiddlewareBus
      * @param object $message
      * @param mixed  ...$extraParams
      *
-     * @return \Traversable<callable>
+     * @return \Iterator<callable>
      *
-     * @psalm-return   \Traversable<array-key, callable(): mixed>
-     * @phpstan-return \Traversable<array-key, callable(): mixed>
+     * @psalm-return   \Iterator<array-key, callable(): mixed>
+     * @phpstan-return \Iterator<array-key, callable(): mixed>
      */
-    protected function chains(object $message, ...$extraParams): \Traversable
+    protected function chains(object $message, ...$extraParams): \Iterator
     {
         foreach ($this->handlers->get(\get_class($message)) as $handler) {
             yield $this->middleware->buildChain($message, $handler, $extraParams);

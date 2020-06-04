@@ -14,12 +14,11 @@ final class CommandBus extends MiddlewareBus implements ICommandBus
      */
     public function handle(object $command, ...$extraParams): void
     {
-        foreach ($this->chains($command, ...$extraParams) as $chain) {
-            $chain();
-
-            return;
+        $chains = $this->chains($command, ...$extraParams);
+        if (false === $chains->valid()) {
+            throw new NoHandlerDefined($command);
         }
 
-        throw new NoHandlerDefined($command);
+        ($chains->current())();
     }
 }

@@ -81,7 +81,7 @@ final class ParentsAwareHandlerRegistry implements HandlerRegistry
     /**
      * {@inheritdoc}
      */
-    public function get(string $messageId): \Traversable
+    public function get(string $messageId): \Iterator
     {
         foreach (\array_merge([$messageId], $this->parse($messageId)) as $implementation) {
             foreach ($this->handlers->get($implementation) as $handler) {

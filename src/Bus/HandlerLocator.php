@@ -41,13 +41,13 @@ interface HandlerLocator
      *
      * @param string $messageId
      *
-     * @return \Traversable<callable>|callable[]
+     * @return \Iterator<callable>|callable[]
      *
      * @psalm-param    class-string $messageId
      * @phpstan-param  class-string $messageId
      *
-     * @psalm-return   \Traversable<array-key, TCallback>
-     * @phpstan-return \Traversable<array-key, TCallback>
+     * @psalm-return   \Iterator<array-key, TCallback>
+     * @phpstan-return \Iterator<array-key, TCallback>
      */
-    public function get(string $messageId): \Traversable;
+    public function get(string $messageId): \Iterator;
 }

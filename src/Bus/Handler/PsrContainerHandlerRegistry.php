@@ -79,7 +79,7 @@ final class PsrContainerHandlerRegistry implements HandlerRegistry
     /**
      * {@inheritdoc}
      */
-    public function get(string $messageId): \Traversable
+    public function get(string $messageId): \Iterator
     {
         if (true === $this->dynamicHandlers->has($messageId)) {
             foreach ($this->dynamicHandlers->get($messageId) as $handler) {
@@ -88,8 +88,7 @@ final class PsrContainerHandlerRegistry implements HandlerRegistry
         }
 
         if (false === empty($this->containerHandlers[$messageId])) {
-            $array_unique = \array_unique($this->containerHandlers[$messageId]);
-            foreach ($array_unique as $handlerId) {
+            foreach (\array_unique($this->containerHandlers[$messageId]) as $handlerId) {
                 yield $this->serviceLocator->get($handlerId);
             }
         }

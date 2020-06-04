@@ -42,7 +42,7 @@ class DifferentQuantityOfParametersTest extends BusTestCase
         $middlewareChain = new MiddlewareChain($this->middlewareRegistry);
 
         $this->instance = new class($this->handlerRegistry, $middlewareChain) extends MiddlewareBus {
-            public function test(object $message, ...$extraParams): \Traversable
+            public function test(object $message, ...$extraParams): \Iterator
             {
                 foreach ($this->chains($message, ...$extraParams) as $chain) {
                     yield $chain();
