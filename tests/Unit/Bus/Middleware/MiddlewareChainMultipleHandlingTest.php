@@ -7,12 +7,12 @@ namespace AwdStudio\Tests\Unit\Bus\Middleware;
 use Prophecy\Argument;
 
 /**
- * @coversDefaultClass \AwdStudio\Bus\Middleware\MiddlewareChain
+ * @coversDefaultClass \AwdStudio\Bus\Middleware\CallbackMiddlewareChain
  */
 final class MiddlewareChainMultipleHandlingTest extends MiddlewareChainTestCase
 {
     /**
-     * @covers ::buildChain
+     * @covers ::chain
      */
     public function testMustApplyAllOfMiddleware(): void
     {
@@ -57,7 +57,7 @@ final class MiddlewareChainMultipleHandlingTest extends MiddlewareChainTestCase
             ->get(Argument::exact(\get_class($message)))
             ->willYield([$middleware1, $middleware2, $middleware3]);
 
-        $chain = $this->instance->buildChain($message, $handler);
+        $chain = $this->instance->chain($message, $handler);
 
         $chain();
 

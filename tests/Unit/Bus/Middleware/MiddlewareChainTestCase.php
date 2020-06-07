@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace AwdStudio\Tests\Unit\Bus\Middleware;
 
 use AwdStudio\Bus\HandlerLocator;
-use AwdStudio\Bus\Middleware\MiddlewareChain;
+use AwdStudio\Bus\Middleware\CallbackMiddlewareChain;
 use AwdStudio\Tests\BusTestCase;
 
 abstract class MiddlewareChainTestCase extends BusTestCase
 {
-    /** @var \AwdStudio\Bus\Middleware\MiddlewareChain */
+    /** @var \AwdStudio\Bus\Middleware\CallbackMiddlewareChain */
     protected $instance;
 
     /** @var \AwdStudio\Bus\HandlerLocator|\Prophecy\Prophecy\ObjectProphecy */
@@ -22,6 +22,6 @@ abstract class MiddlewareChainTestCase extends BusTestCase
 
         $this->handlersProphecy = $this->prophesize(HandlerLocator::class);
 
-        $this->instance = new MiddlewareChain($this->handlersProphecy->reveal());
+        $this->instance = new CallbackMiddlewareChain($this->handlersProphecy->reveal());
     }
 }

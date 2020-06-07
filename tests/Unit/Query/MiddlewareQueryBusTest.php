@@ -6,24 +6,24 @@ namespace AwdStudio\Tests\Unit\Query;
 
 use AwdStudio\Bus\Exception\NoHandlerDefined;
 use AwdStudio\Bus\HandlerLocator;
-use AwdStudio\Bus\Middleware;
-use AwdStudio\Query\IQueryBus;
+use AwdStudio\Bus\MiddlewareChain;
 use AwdStudio\Query\QueryBus;
+use AwdStudio\Query\MiddlewareQueryBus;
 use AwdStudio\Tests\BusTestCase;
 use Prophecy\Argument;
 
 /**
- * @coversDefaultClass \AwdStudio\Query\QueryBus
+ * @coversDefaultClass \AwdStudio\Query\MiddlewareQueryBus
  */
-final class QueryBusTest extends BusTestCase
+final class MiddlewareQueryBusTest extends BusTestCase
 {
-    /** @var \AwdStudio\Query\QueryBus */
+    /** @var \AwdStudio\Query\MiddlewareQueryBus */
     private $instance;
 
     /** @var \AwdStudio\Bus\HandlerLocator|\Prophecy\Prophecy\ObjectProphecy */
     private $handlersProphecy;
 
-    /** @var \AwdStudio\Bus\Middleware|\Prophecy\Prophecy\ObjectProphecy */
+    /** @var \AwdStudio\Bus\MiddlewareChain|\Prophecy\Prophecy\ObjectProphecy */
     private $middlewareProphecy;
 
     protected function setUp(): void
@@ -31,9 +31,9 @@ final class QueryBusTest extends BusTestCase
         parent::setUp();
 
         $this->handlersProphecy = $this->prophesize(HandlerLocator::class);
-        $this->middlewareProphecy = $this->prophesize(Middleware::class);
+        $this->middlewareProphecy = $this->prophesize(MiddlewareChain::class);
 
-        $this->instance = new QueryBus($this->handlersProphecy->reveal(), $this->middlewareProphecy->reveal());
+        $this->instance = new MiddlewareQueryBus($this->handlersProphecy->reveal(), $this->middlewareProphecy->reveal());
     }
 
     /**
@@ -41,7 +41,7 @@ final class QueryBusTest extends BusTestCase
      */
     public function testMustImplementAQueryBusInterface(): void
     {
-        $this->assertInstanceOf(IQueryBus::class, $this->instance);
+        $this->assertInstanceOf(QueryBus::class, $this->instance);
     }
 
     /**
@@ -64,7 +64,7 @@ final class QueryBusTest extends BusTestCase
             ->willYield([$handler]);
 
         $this->middlewareProphecy
-            ->buildChain(Argument::exact($message), Argument::exact($handler), Argument::type('array'))
+            ->chain(Argument::exact($message), Argument::exact($handler), Argument::type('array'))
             ->willReturn(static function () use ($message, $handler): string { return $handler($message); });
 
         $result = $this->instance->handle($message);
@@ -107,7 +107,7 @@ final class QueryBusTest extends BusTestCase
             ->willYield([$handler1, $handler2]);
 
         $this->middlewareProphecy
-            ->buildChain(Argument::exact($message), Argument::type('callable'), Argument::type('array'))
+            ->chain(Argument::exact($message), Argument::type('callable'), Argument::type('array'))
             ->willReturn(
                 static function () use ($message, $handler1): int { return $handler1($message); },
                 static function () use ($message, $handler2): int { return $handler2($message); }

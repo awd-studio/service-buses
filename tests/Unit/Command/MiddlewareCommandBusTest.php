@@ -6,24 +6,24 @@ namespace AwdStudio\Tests\Unit\Command;
 
 use AwdStudio\Bus\Exception\NoHandlerDefined;
 use AwdStudio\Bus\HandlerLocator;
-use AwdStudio\Bus\Middleware;
+use AwdStudio\Bus\MiddlewareChain;
+use AwdStudio\Command\MiddlewareCommandBus;
 use AwdStudio\Command\CommandBus;
-use AwdStudio\Command\ICommandBus;
 use AwdStudio\Tests\BusTestCase;
 use Prophecy\Argument;
 
 /**
- * @coversDefaultClass \AwdStudio\Command\CommandBus
+ * @coversDefaultClass \AwdStudio\Command\MiddlewareCommandBus
  */
-final class CommandBusTest extends BusTestCase
+final class MiddlewareCommandBusTest extends BusTestCase
 {
-    /** @var \AwdStudio\Command\CommandBus */
+    /** @var \AwdStudio\Command\MiddlewareCommandBus */
     private $instance;
 
     /** @var \AwdStudio\Bus\HandlerLocator|\Prophecy\Prophecy\ObjectProphecy */
     private $handlersProphecy;
 
-    /** @var \AwdStudio\Bus\Middleware|\Prophecy\Prophecy\ObjectProphecy */
+    /** @var \AwdStudio\Bus\MiddlewareChain|\Prophecy\Prophecy\ObjectProphecy */
     private $middlewareProphecy;
 
     protected function setUp(): void
@@ -31,9 +31,9 @@ final class CommandBusTest extends BusTestCase
         parent::setUp();
 
         $this->handlersProphecy = $this->prophesize(HandlerLocator::class);
-        $this->middlewareProphecy = $this->prophesize(Middleware::class);
+        $this->middlewareProphecy = $this->prophesize(MiddlewareChain::class);
 
-        $this->instance = new CommandBus($this->handlersProphecy->reveal(), $this->middlewareProphecy->reveal());
+        $this->instance = new MiddlewareCommandBus($this->handlersProphecy->reveal(), $this->middlewareProphecy->reveal());
     }
 
     /**
@@ -41,7 +41,7 @@ final class CommandBusTest extends BusTestCase
      */
     public function testMustImplementACommandBusInterface(): void
     {
-        $this->assertInstanceOf(ICommandBus::class, $this->instance);
+        $this->assertInstanceOf(CommandBus::class, $this->instance);
     }
 
     /**
@@ -64,7 +64,7 @@ final class CommandBusTest extends BusTestCase
             ->willYield([$handler]);
 
         $this->middlewareProphecy
-            ->buildChain(Argument::exact($message), Argument::exact($handler), Argument::type('array'))
+            ->chain(Argument::exact($message), Argument::exact($handler), Argument::type('array'))
             ->willReturn(static function () use ($message, $handler): void { $handler($message); });
 
         $this->instance->handle($message);
@@ -96,7 +96,7 @@ final class CommandBusTest extends BusTestCase
             ->willYield([$handler1, $handler2]);
 
         $this->middlewareProphecy
-            ->buildChain(Argument::exact($message), Argument::type('callable'), Argument::type('array'))
+            ->chain(Argument::exact($message), Argument::type('callable'), Argument::type('array'))
             ->willReturn(
                 static function () use ($message, $handler1): void { $handler1($message); },
                 static function () use ($message, $handler2): void { $handler2($message); }

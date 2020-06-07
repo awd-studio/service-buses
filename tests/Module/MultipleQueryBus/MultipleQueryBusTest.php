@@ -5,16 +5,16 @@ declare(strict_types=1);
 namespace AwdStudio\Tests\Module\MultipleQueryBus;
 
 use AwdStudio\Bus\Handler\InMemoryHandlerLocator;
-use AwdStudio\Bus\Middleware\MiddlewareChain;
-use AwdStudio\Query\QueryBus;
+use AwdStudio\Bus\Middleware\CallbackMiddlewareChain;
+use AwdStudio\Query\MiddlewareQueryBus;
 use AwdStudio\Tests\BusTestCase;
 
 /**
- * @coversDefaultClass \AwdStudio\Query\QueryBus
+ * @coversDefaultClass \AwdStudio\Query\MiddlewareQueryBus
  */
 final class MultipleQueryBusTest extends BusTestCase
 {
-    /** @var \AwdStudio\Query\IQueryBus */
+    /** @var \AwdStudio\Query\QueryBus */
     private $instance;
 
     /** @var \AwdStudio\Bus\Handler\InMemoryHandlerLocator */
@@ -26,7 +26,7 @@ final class MultipleQueryBusTest extends BusTestCase
 
         $this->handlerRegistry = new InMemoryHandlerLocator();
 
-        $this->instance = new QueryBus($this->handlerRegistry, new MiddlewareChain(new InMemoryHandlerLocator()));
+        $this->instance = new MiddlewareQueryBus($this->handlerRegistry, new CallbackMiddlewareChain(new InMemoryHandlerLocator()));
     }
 
     /**

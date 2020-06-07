@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace AwdStudio\Bus\Middleware;
 
 use AwdStudio\Bus\HandlerLocator;
-use AwdStudio\Bus\Middleware;
+use AwdStudio\Bus\MiddlewareChain;
 
-final class MiddlewareChain implements Middleware
+/**
+ * Implements MiddlewareChain that builds a chain from callback-handlers.
+ */
+final class CallbackMiddlewareChain implements MiddlewareChain
 {
     /**
      * @var \AwdStudio\Bus\HandlerLocator
@@ -31,7 +34,7 @@ final class MiddlewareChain implements Middleware
     /**
      * {@inheritdoc}
      */
-    public function buildChain(object $message, callable $handler, array $extraParams = []): callable
+    public function chain(object $message, callable $handler, array $extraParams = []): callable
     {
         $next = /** @return mixed */ static function () use ($handler, $message, $extraParams) {
             return $handler($message, ...$extraParams);

@@ -7,12 +7,12 @@ namespace AwdStudio\Tests\Unit\Bus\Middleware;
 use Prophecy\Argument;
 
 /**
- * @coversDefaultClass \AwdStudio\Bus\Middleware\MiddlewareChain
+ * @coversDefaultClass \AwdStudio\Bus\Middleware\CallbackMiddlewareChain
  */
 final class MiddlewareChainHandlingTest extends MiddlewareChainTestCase
 {
     /**
-     * @covers ::buildChain
+     * @covers ::chain
      */
     public function testMustInjectAHandlerAsAPartOfChainAndReturnItsResult(): void
     {
@@ -22,13 +22,13 @@ final class MiddlewareChainHandlingTest extends MiddlewareChainTestCase
 
         $handler = static function (object $message): int { return 42; };
 
-        $chain = $this->instance->buildChain(new \stdClass(), $handler);
+        $chain = $this->instance->chain(new \stdClass(), $handler);
 
         $this->assertSame(42, $chain());
     }
 
     /**
-     * @covers ::buildChain
+     * @covers ::chain
      */
     public function testMustAllowToRunMiddlewareBeforeTheHandler(): void
     {
@@ -50,14 +50,14 @@ final class MiddlewareChainHandlingTest extends MiddlewareChainTestCase
             ->get(Argument::exact(\get_class($message)))
             ->willYield([$middleware]);
 
-        $chain = $this->instance->buildChain($message, $handler);
+        $chain = $this->instance->chain($message, $handler);
 
         $this->assertSame(2, $chain());
         $this->assertSame(2, $message->i);
     }
 
     /**
-     * @covers ::buildChain
+     * @covers ::chain
      */
     public function testMustAllowToRunMiddlewareAfterTheHandler(): void
     {
@@ -81,14 +81,14 @@ final class MiddlewareChainHandlingTest extends MiddlewareChainTestCase
             ->get(Argument::exact(\get_class($message)))
             ->willYield([$middleware]);
 
-        $chain = $this->instance->buildChain($message, $handler);
+        $chain = $this->instance->chain($message, $handler);
 
         $this->assertSame(2, $chain());
         $this->assertSame(3, $message->i);
     }
 
     /**
-     * @covers ::buildChain
+     * @covers ::chain
      */
     public function testMustAllowMiddlewareToRewriteHandledResult(): void
     {
@@ -108,7 +108,7 @@ final class MiddlewareChainHandlingTest extends MiddlewareChainTestCase
             ->get(Argument::exact(\get_class($message)))
             ->willYield([$middleware]);
 
-        $chain = $this->instance->buildChain($message, $handler);
+        $chain = $this->instance->chain($message, $handler);
 
         $this->assertSame('bar', $chain());
     }

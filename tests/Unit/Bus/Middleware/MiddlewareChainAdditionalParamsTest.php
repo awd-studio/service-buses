@@ -7,12 +7,12 @@ namespace AwdStudio\Tests\Unit\Bus\Middleware;
 use Prophecy\Argument;
 
 /**
- * @coversDefaultClass \AwdStudio\Bus\Middleware\MiddlewareChain
+ * @coversDefaultClass \AwdStudio\Bus\Middleware\CallbackMiddlewareChain
  */
 final class MiddlewareChainAdditionalParamsTest extends MiddlewareChainTestCase
 {
     /**
-     * @covers ::buildChain
+     * @covers ::chain
      */
     public function testMustAcceptAdditionalParametersAndPassThemToAHandler(): void
     {
@@ -29,13 +29,13 @@ final class MiddlewareChainAdditionalParamsTest extends MiddlewareChainTestCase
             ->get(Argument::exact(\get_class($message)))
             ->willYield([]);
 
-        $chain = $this->instance->buildChain($message, $handler, [42, 'baz']);
+        $chain = $this->instance->chain($message, $handler, [42, 'baz']);
 
         $this->assertSame('foo42baz', $chain());
     }
 
     /**
-     * @covers ::buildChain
+     * @covers ::chain
      */
     public function testMustAcceptAdditionalParametersAndPassThemToMiddleware(): void
     {
@@ -66,7 +66,7 @@ final class MiddlewareChainAdditionalParamsTest extends MiddlewareChainTestCase
             ->get(\get_class($message))
             ->willYield([$middleware1, $middleware2]);
 
-        $chain = $this->instance->buildChain($message, $handler, [42, 'baz']);
+        $chain = $this->instance->chain($message, $handler, [42, 'baz']);
 
         $this->assertSame('foo42bazqoo42qooooobaz', $chain());
     }

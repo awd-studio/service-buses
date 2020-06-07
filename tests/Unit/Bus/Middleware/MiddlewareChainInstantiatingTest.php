@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace AwdStudio\Tests\Unit\Bus\Middleware;
 
-use AwdStudio\Bus\Middleware;
+use AwdStudio\Bus\MiddlewareChain;
 
 /**
- * @coversDefaultClass \AwdStudio\Bus\Middleware\MiddlewareChain
+ * @coversDefaultClass \AwdStudio\Bus\Middleware\CallbackMiddlewareChain
  */
 final class MiddlewareChainInstantiatingTest extends MiddlewareChainTestCase
 {
@@ -16,6 +16,6 @@ final class MiddlewareChainInstantiatingTest extends MiddlewareChainTestCase
      */
     public function testMustImplementAMiddleware(): void
     {
-        $this->assertInstanceOf(Middleware::class, $this->instance);
+        $this->assertInstanceOf(MiddlewareChain::class, $this->instance);
     }
 }

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace AwdStudio\Tests\Module\DifferentQuantityOfParameters;
 
 use AwdStudio\Bus\Handler\PsrContainerHandlerRegistry;
-use AwdStudio\Bus\Middleware\MiddlewareChain;
+use AwdStudio\Bus\Middleware\CallbackMiddlewareChain;
 use AwdStudio\Bus\MiddlewareBus;
 use AwdStudio\Tests\BusTestCase;
 use AwdStudio\Tests\Module\Stub\StubServiceLocator;
@@ -39,12 +39,12 @@ class DifferentQuantityOfParametersTest extends BusTestCase
 
         $this->middlewareServiceLocator = new StubServiceLocator();
         $this->middlewareRegistry = new PsrContainerHandlerRegistry($this->middlewareServiceLocator);
-        $middlewareChain = new MiddlewareChain($this->middlewareRegistry);
+        $middlewareChain = new CallbackMiddlewareChain($this->middlewareRegistry);
 
         $this->instance = new class($this->handlerRegistry, $middlewareChain) extends MiddlewareBus {
             public function test(object $message, ...$extraParams): \Iterator
             {
-                foreach ($this->chains($message, ...$extraParams) as $chain) {
+                foreach ($this->buildChains($message, ...$extraParams) as $chain) {
                     yield $chain();
                 }
             }
@@ -52,7 +52,7 @@ class DifferentQuantityOfParametersTest extends BusTestCase
     }
 
     /**
-     * @covers ::chains
+     * @covers ::buildChains
      * @dataProvider argumentsDataProvider
      */
     public function testMustAllowToUseDifferentQuantityOfAcceptableParameters(int ...$arguments): void

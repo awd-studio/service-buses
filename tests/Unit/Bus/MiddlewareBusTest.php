@@ -6,7 +6,7 @@ namespace AwdStudio\Tests\Unit\Bus;
 
 use AwdStudio\Bus\MiddlewareBus;
 use AwdStudio\Bus\HandlerLocator;
-use AwdStudio\Bus\Middleware;
+use AwdStudio\Bus\MiddlewareChain;
 use AwdStudio\Tests\BusTestCase;
 use Prophecy\Argument;
 
@@ -21,7 +21,7 @@ final class MiddlewareBusTest extends BusTestCase
     /** @var \AwdStudio\Bus\HandlerLocator|\Prophecy\Prophecy\ObjectProphecy */
     private $handlersProphecy;
 
-    /** @var \AwdStudio\Bus\Middleware|\Prophecy\Prophecy\ObjectProphecy */
+    /** @var \AwdStudio\Bus\MiddlewareChain|\Prophecy\Prophecy\ObjectProphecy */
     private $middlewareProphecy;
 
     protected function setUp(): void
@@ -29,7 +29,7 @@ final class MiddlewareBusTest extends BusTestCase
         parent::setUp();
 
         $this->handlersProphecy = $this->prophesize(HandlerLocator::class);
-        $this->middlewareProphecy = $this->prophesize(Middleware::class);
+        $this->middlewareProphecy = $this->prophesize(MiddlewareChain::class);
 
         $this->instance = new class(
             $this->handlersProphecy->reveal(),
@@ -43,7 +43,7 @@ final class MiddlewareBusTest extends BusTestCase
              */
             public function test(object $message, ...$extra): iterable
             {
-                yield from $this->chains($message, ...$extra);
+                yield from $this->buildChains($message, ...$extra);
             }
         };
     }
@@ -57,7 +57,7 @@ final class MiddlewareBusTest extends BusTestCase
     }
 
     /**
-     * @covers ::chains
+     * @covers ::buildChains
      */
     public function testMustBuildAChainWithAHandler(): void
     {
@@ -69,7 +69,7 @@ final class MiddlewareBusTest extends BusTestCase
             ->willYield([$handler]);
 
         $this->middlewareProphecy
-            ->buildChain(Argument::exact($message), Argument::type('callable'), Argument::any())
+            ->chain(Argument::exact($message), Argument::type('callable'), Argument::any())
             ->willReturn(static function () use ($message, $handler): int { return $handler($message); });
 
         $firstResult = $this->instance->test($message);
@@ -78,7 +78,7 @@ final class MiddlewareBusTest extends BusTestCase
     }
 
     /**
-     * @covers ::chains
+     * @covers ::buildChains
      */
     public function testMustApplyEachOfHandlersDuringTheHandling(): void
     {
@@ -101,7 +101,7 @@ final class MiddlewareBusTest extends BusTestCase
             ->willYield([$handler1, $handler2, $handler3]);
 
         $this->middlewareProphecy
-            ->buildChain(Argument::exact($message), Argument::type('callable'), Argument::any())
+            ->chain(Argument::exact($message), Argument::type('callable'), Argument::any())
             ->willReturn(
                 static function () use ($message, $handler1): void { $handler1($message); },
                 static function () use ($message, $handler2): void { $handler2($message); },
