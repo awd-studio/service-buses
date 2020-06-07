@@ -118,9 +118,8 @@ $bus = new class(new InMemoryHandlerLocator()) extends \AwdStudio\Bus\SimpleBus 
     {
         // Our parent allows us to iterate all handlers 
         // that assigned to certain message
-        foreach ($this->handleAll($message) as $handler) {
-            // All we need is to feed a handler with a message
-            $handler($message);
+        foreach ($this->handleAll($message) as $result) {
+            echo $result;
         }
     }
 };
@@ -385,7 +384,7 @@ $bus = new class ($handlerRegistry) extends SimpleBus {
     public  function handle(object $message): void 
     {
         foreach ($this->handleAll($message) as $result) {
-            $result($message);
+            echo $result;
         }
     }
 };
