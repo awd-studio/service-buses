@@ -6,8 +6,8 @@ namespace AwdStudio\Tests\Unit\Event;
 
 use AwdStudio\Bus\HandlerLocator;
 use AwdStudio\Bus\MiddlewareChain;
-use AwdStudio\Event\MiddlewareEventBus;
 use AwdStudio\Event\EventBus;
+use AwdStudio\Event\MiddlewareEventBus;
 use AwdStudio\Tests\BusTestCase;
 use Prophecy\Argument;
 
@@ -61,7 +61,7 @@ final class MiddlewareEventBusTest extends BusTestCase
      */
     public function testMustApplyASingleHandler(): void
     {
-        $message = new class {
+        $message = new class() {
             /** @var bool */
             public $isChanged = false;
         };
@@ -89,7 +89,7 @@ final class MiddlewareEventBusTest extends BusTestCase
      */
     public function testMustApplyAEachOfProvidedHandlers(): void
     {
-        $message = new class {
+        $message = new class() {
             /** @var bool */
             public $isChanged1 = false;
 

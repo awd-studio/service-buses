@@ -7,8 +7,8 @@ namespace AwdStudio\Tests\Unit\Command;
 use AwdStudio\Bus\Exception\NoHandlerDefined;
 use AwdStudio\Bus\HandlerLocator;
 use AwdStudio\Bus\MiddlewareChain;
-use AwdStudio\Command\MiddlewareCommandBus;
 use AwdStudio\Command\CommandBus;
+use AwdStudio\Command\MiddlewareCommandBus;
 use AwdStudio\Tests\BusTestCase;
 use Prophecy\Argument;
 
@@ -49,7 +49,7 @@ final class MiddlewareCommandBusTest extends BusTestCase
      */
     public function testMustApplyAHandler(): void
     {
-        $message = new class {
+        $message = new class() {
             public $isChanged = false;
         };
 
@@ -77,7 +77,7 @@ final class MiddlewareCommandBusTest extends BusTestCase
      */
     public function testMustApplyTheOnlyFirstHandler(): void
     {
-        $message = new class {
+        $message = new class() {
             /** @var bool */
             public $isChanged = false;
 

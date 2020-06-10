@@ -36,7 +36,7 @@ final class InMemoryHandlerLocatorTest extends BusTestCase
      */
     public function testMustProvideAnInterfaceToAppendHandlers(): void
     {
-        $handler = static function (object $message) { };
+        $handler = static function (object $message): void { };
 
         $this->instance->add(\stdClass::class, $handler);
 
@@ -56,7 +56,7 @@ final class InMemoryHandlerLocatorTest extends BusTestCase
      */
     public function testMustReturnTrueIfThereIsASingleHandlersForAMessage(): void
     {
-        $this->instance->add(\stdClass::class, static function (object $message) { });
+        $this->instance->add(\stdClass::class, static function (object $message): void { });
 
         $this->assertTrue($this->instance->has(\stdClass::class));
     }
@@ -66,9 +66,9 @@ final class InMemoryHandlerLocatorTest extends BusTestCase
      */
     public function testMustReturnTrueIfThereAreMultipleAssignedHandlersForAMessage(): void
     {
-        $this->instance->add(\stdClass::class, static function (object $message) { });
-        $this->instance->add(\stdClass::class, static function (object $message) { });
-        $this->instance->add(\stdClass::class, static function (object $message) { });
+        $this->instance->add(\stdClass::class, static function (object $message): void { });
+        $this->instance->add(\stdClass::class, static function (object $message): void { });
+        $this->instance->add(\stdClass::class, static function (object $message): void { });
 
         $this->assertTrue($this->instance->has(\stdClass::class));
     }
@@ -78,9 +78,9 @@ final class InMemoryHandlerLocatorTest extends BusTestCase
      */
     public function testMustReturnAListOfHandlersForAMessage(): void
     {
-        $handler1 = static function (object $message) { };
-        $handler2 = static function (object $message) { };
-        $handler3 = static function (object $message) { };
+        $handler1 = static function (object $message): void { };
+        $handler2 = static function (object $message): void { };
+        $handler3 = static function (object $message): void { };
 
         $this->instance->add(\stdClass::class, $handler1);
         $this->instance->add(\stdClass::class, $handler2);

@@ -7,13 +7,25 @@ namespace AwdStudio\Tests\Unit\Bus\Registry;
 use AwdStudio\Bus\Registry\ReflectionImplementationParser;
 use AwdStudio\Tests\BusTestCase;
 
-interface IFoo {}
-interface IBar {}
-interface IBaz {}
+interface IFoo
+{
+}
+interface IBar
+{
+}
+interface IBaz
+{
+}
 
-abstract class Foo implements IFoo {}
-abstract class Bar extends Foo implements IBar {}
-final class Baz extends Bar implements IBaz {}
+abstract class Foo implements IFoo
+{
+}
+abstract class Bar extends Foo implements IBar
+{
+}
+final class Baz extends Bar implements IBaz
+{
+}
 
 /**
  * @coversDefaultClass \AwdStudio\Bus\Registry\ReflectionImplementationParser
@@ -30,6 +42,9 @@ final class ReflectionHandlerRegistryTest extends BusTestCase
         $this->instance = new ReflectionImplementationParser();
     }
 
+    /**
+     * @coversNothing
+     */
     public function testMustProvidePublicConstructor(): void
     {
         $this->assertNotNull($this->instance);

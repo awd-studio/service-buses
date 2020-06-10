@@ -16,12 +16,11 @@ final class MiddlewareChainAdditionalParamsTest extends MiddlewareChainTestCase
      */
     public function testMustAcceptAdditionalParametersAndPassThemToAHandler(): void
     {
-        $handler = static function (object $message, int $bar, string $baz): string
-        {
-            return $message->foo . $bar . $baz;
+        $handler = static function (object $message, int $bar, string $baz): string {
+            return $message->foo.$bar.$baz;
         };
 
-        $message = new class {
+        $message = new class() {
             public $foo = 'foo';
         };
 
@@ -39,27 +38,24 @@ final class MiddlewareChainAdditionalParamsTest extends MiddlewareChainTestCase
      */
     public function testMustAcceptAdditionalParametersAndPassThemToMiddleware(): void
     {
-        $handler = static function (object $message, int $bar, string $baz): string
-        {
-            return $message->foo . $bar . $baz;
+        $handler = static function (object $message, int $bar, string $baz): string {
+            return $message->foo.$bar.$baz;
         };
 
-        $message = new class {
+        $message = new class() {
             public $foo = 'foo';
         };
 
-        $middleware1 = static function (object $message, callable $next, int $bar, string $baz): string
-        {
+        $middleware1 = static function (object $message, callable $next, int $bar, string $baz): string {
             $result = $next();
 
-            return $result . 'qoo' . $bar;
+            return $result.'qoo'.$bar;
         };
 
-        $middleware2 = static function (object $message, callable $next, int $bar, string $baz): string
-        {
+        $middleware2 = static function (object $message, callable $next, int $bar, string $baz): string {
             $result = $next();
 
-            return $result . 'qooooo' . $baz;
+            return $result.'qooooo'.$baz;
         };
 
         $this->handlersProphecy

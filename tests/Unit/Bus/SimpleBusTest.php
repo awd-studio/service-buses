@@ -102,6 +102,8 @@ final class SimpleBusTest extends BusTestCase
             ->willYield([$h1, $h2, $h3]);
 
         foreach ($this->instance->test(new \stdClass()) as $result) {
+            unset($result);
+
             break;
         }
 
@@ -115,7 +117,7 @@ final class SimpleBusTest extends BusTestCase
      */
     public function testMustCallHandlersWithExactSameMessage(): void
     {
-        $message = new class {
+        $message = new class() {
             public $i = 0;
         };
 
@@ -141,18 +143,15 @@ final class SimpleBusTest extends BusTestCase
         $extra2 = null;
         $extra3 = null;
 
-        $h1 = static function (\stdClass $message, int $e1) use (&$extra1): void
-        {
+        $h1 = static function (\stdClass $message, int $e1) use (&$extra1): void {
             $extra1 = $e1;
         };
 
-        $h2 = static function (\stdClass $message, int $e1, string $e2) use (&$extra2): void
-        {
+        $h2 = static function (\stdClass $message, int $e1, string $e2) use (&$extra2): void {
             $extra2 = $e2;
         };
 
-        $h3 = static function (\stdClass $message, int $e1, string $e2, \stdClass $e3) use (&$extra3): void
-        {
+        $h3 = static function (\stdClass $message, int $e1, string $e2, \stdClass $e3) use (&$extra3): void {
             $extra3 = $e3->bar;
         };
 

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace AwdStudio\Tests\Unit\Bus\Handler;
 
 use AwdStudio\Bus\Exception\InvalidHandler;
-use AwdStudio\Bus\HandlerLocator;
 use AwdStudio\Bus\Handler\PsrContainerHandlerRegistry;
+use AwdStudio\Bus\HandlerLocator;
 use AwdStudio\Tests\BusTestCase;
 use Prophecy\Argument;
 use Psr\Container\ContainerInterface;
