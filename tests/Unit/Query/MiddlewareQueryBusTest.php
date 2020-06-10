@@ -7,8 +7,8 @@ namespace AwdStudio\Tests\Unit\Query;
 use AwdStudio\Bus\Exception\NoHandlerDefined;
 use AwdStudio\Bus\HandlerLocator;
 use AwdStudio\Bus\MiddlewareChain;
-use AwdStudio\Query\QueryBus;
 use AwdStudio\Query\MiddlewareQueryBus;
+use AwdStudio\Query\QueryBus;
 use AwdStudio\Tests\BusTestCase;
 use Prophecy\Argument;
 
@@ -49,7 +49,7 @@ final class MiddlewareQueryBusTest extends BusTestCase
      */
     public function testMustApplyAHandler(): void
     {
-        $message = new class {
+        $message = new class() {
             /** @var string */
             public $copyMe = 'foo';
         };
@@ -77,22 +77,20 @@ final class MiddlewareQueryBusTest extends BusTestCase
      */
     public function testMustApplyTheOnlyFirstHandler(): void
     {
-        $message = new class {
+        $message = new class() {
             /** @var bool */
             public $isChanged = false;
 
             /** @var bool */
             public $isCalled = false;
         };
-        $handler1 = static function (object $message): int
-        {
+        $handler1 = static function (object $message): int {
             $message->isChanged = true;
 
             return 42;
         };
 
-        $handler2 = static function (object $message): int
-        {
+        $handler2 = static function (object $message): int {
             $message->isCalled = true;
 
             return 69;
@@ -123,8 +121,7 @@ final class MiddlewareQueryBusTest extends BusTestCase
     /**
      * @covers ::handle
      */
-    public
-    function testMustThrowAnExceptionIfThereIsNoAHandler(): void
+    public function testMustThrowAnExceptionIfThereIsNoAHandler(): void
     {
         $this->handlersProphecy
             ->get(Argument::any())

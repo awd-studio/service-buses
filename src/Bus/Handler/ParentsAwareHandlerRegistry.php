@@ -48,9 +48,9 @@ final class ParentsAwareHandlerRegistry implements HandlerRegistry
     /**
      * {@inheritdoc}
      */
-    public function register(string $messageId, string $handlerId): void
+    public function register(string $messageId, string $handlerId, string $handlerMethod = '__invoke'): void
     {
-        $this->handlers->register($messageId, $handlerId);
+        $this->handlers->register($messageId, $handlerId, $handlerMethod);
     }
 
     /**

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace AwdStudio\Tests\Unit\Bus\Handler;
 
-use AwdStudio\Bus\Handler\ParentsAwareHandlerRegistry;
 use AwdStudio\Bus\Handler\HandlerRegistry;
+use AwdStudio\Bus\Handler\ParentsAwareHandlerRegistry;
 use AwdStudio\Bus\HandlerLocator;
 use AwdStudio\Bus\Registry\ImplementationParser;
 use AwdStudio\Tests\BusTestCase;
@@ -60,7 +60,7 @@ final class ParentsAwareHandlersTest extends BusTestCase
     public function testMustRegisterViaHandlers(): void
     {
         $this->handlersRegistryProphesy
-            ->register(Argument::exact('Foo'), Argument::exact('FooHandler'))
+            ->register(Argument::exact('Foo'), Argument::exact('FooHandler'), Argument::type('string'))
             ->shouldBeCalledOnce();
 
         $this->instance->register('Foo', 'FooHandler');
@@ -166,7 +166,7 @@ final class ParentsAwareHandlersTest extends BusTestCase
      */
     public function testMustYieldAllHandlersFromHandlers(): void
     {
-        $handler = static function () { };
+        $handler = static function (): void { };
 
         $this->handlersRegistryProphesy
             ->get(Argument::exact('Foo'))

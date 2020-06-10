@@ -1,6 +1,7 @@
 parameters:
     paths:
         - 'src'
+        - 'tests'
 
     sets:
         - 'clean-code'

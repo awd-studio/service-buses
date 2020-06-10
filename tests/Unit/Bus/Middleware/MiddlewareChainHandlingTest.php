@@ -37,8 +37,7 @@ final class MiddlewareChainHandlingTest extends MiddlewareChainTestCase
             public $i = 0;
         };
 
-        $middleware = static function (object $message, callable $next): int
-        {
+        $middleware = static function (object $message, callable $next): int {
             ++$message->i;
 
             return $next();
@@ -66,8 +65,7 @@ final class MiddlewareChainHandlingTest extends MiddlewareChainTestCase
             public $i = 0;
         };
 
-        $middleware = static function (object $message, callable $next): int
-        {
+        $middleware = static function (object $message, callable $next): int {
             ++$message->i;
             $result = $next();
             ++$message->i;
@@ -92,15 +90,13 @@ final class MiddlewareChainHandlingTest extends MiddlewareChainTestCase
      */
     public function testMustAllowMiddlewareToRewriteHandledResult(): void
     {
-        $handler = static function (object $message): string
-        {
+        $handler = static function (object $message): string {
             return 'foo';
         };
 
         $message = new \stdClass();
 
-        $middleware = static function (object $message, callable $next): string
-        {
+        $middleware = static function (object $message, callable $next): string {
             return 'bar';
         };
 

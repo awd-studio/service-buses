@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace AwdStudio\Tests\Unit\Bus;
 
-use AwdStudio\Bus\MiddlewareBus;
 use AwdStudio\Bus\HandlerLocator;
+use AwdStudio\Bus\MiddlewareBus;
 use AwdStudio\Bus\MiddlewareChain;
 use AwdStudio\Tests\BusTestCase;
 use Prophecy\Argument;
@@ -31,10 +31,7 @@ final class MiddlewareBusTest extends BusTestCase
         $this->handlersProphecy = $this->prophesize(HandlerLocator::class);
         $this->middlewareProphecy = $this->prophesize(MiddlewareChain::class);
 
-        $this->instance = new class(
-            $this->handlersProphecy->reveal(),
-            $this->middlewareProphecy->reveal()
-        ) extends MiddlewareBus {
+        $this->instance = new class($this->handlersProphecy->reveal(), $this->middlewareProphecy->reveal()) extends MiddlewareBus {
             /**
              * @param object $message
              * @param mixed  ...$extra

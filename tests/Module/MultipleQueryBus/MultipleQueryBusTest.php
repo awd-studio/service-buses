@@ -34,25 +34,22 @@ final class MultipleQueryBusTest extends BusTestCase
      */
     public function testMustReturnItemsFromAllHandlers(): void
     {
-        $h1 = static function (): \Iterator
-        {
+        $h1 = static function (): \Iterator {
             yield 'foo';
             yield 'bar';
         };
 
-        $h2 = static function (): \Iterator
-        {
+        $h2 = static function (): \Iterator {
             yield 'baz';
         };
 
-        $h3 = static function (): \Iterator
-        {
+        $h3 = static function (): \Iterator {
             yield 'quu';
             yield 'quuuu';
             yield 'quuuuuuu';
         };
 
-        $aggregateServiceHandler = new class ($h1, $h2, $h3) {
+        $aggregateServiceHandler = new class($h1, $h2, $h3) {
             /** @var array */
             private $handlers;
 

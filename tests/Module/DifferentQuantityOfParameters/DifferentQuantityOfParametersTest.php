@@ -59,8 +59,7 @@ class DifferentQuantityOfParametersTest extends BusTestCase
     {
         $this->handlerServiceLocator->add(MessageHandler::class);
         $this->handlerRegistry->register(Message::class, MessageHandler::class);
-        $customHandler = static function (Message $message, ?int $foo = null, ?int $bar = null, ?int $baz = null)
-        {
+        $customHandler = static function (Message $message, ?int $foo = null, ?int $bar = null, ?int $baz = null): void {
             $message->iCallIt('customHandler');
         };
         $this->handlerRegistry->add(Message::class, $customHandler);

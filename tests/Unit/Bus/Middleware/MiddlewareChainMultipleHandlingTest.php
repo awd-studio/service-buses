@@ -30,28 +30,25 @@ final class MiddlewareChainMultipleHandlingTest extends MiddlewareChainTestCase
             public $h;
         };
 
-        $middleware1 = static function (object $message, callable $next): void
-        {
+        $middleware1 = static function (object $message, callable $next): void {
             $message->m1 = 'foo';
 
             $next();
         };
 
-        $middleware2 = static function (object $message, callable $next): void
-        {
+        $middleware2 = static function (object $message, callable $next): void {
             $message->m2 = 'bar';
 
             $next();
         };
 
-        $middleware3 = static function (object $message, callable $next): void
-        {
+        $middleware3 = static function (object $message, callable $next): void {
             $message->m3 = 'baz';
 
             $next();
         };
 
-        $handler = static function (object $message) { $message->h = 'done'; };
+        $handler = static function (object $message): void { $message->h = 'done'; };
 
         $this->handlersProphecy
             ->get(Argument::exact(\get_class($message)))
