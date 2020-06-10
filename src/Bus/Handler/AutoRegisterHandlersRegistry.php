@@ -95,10 +95,6 @@ final class AutoRegisterHandlersRegistry implements HandlerRegistry
      */
     public function autoRegister(string $handlerId, string $handlerMethod = '__invoke'): void
     {
-        if (false === $this->parent->has($handlerId) || false === \class_exists($handlerId)) {
-            throw new InvalidHandler(\sprintf('There is no a service such as "%s" to register', $handlerId));
-        }
-
         $classReflection = new \ReflectionClass($handlerId);
 
         try {

@@ -158,34 +158,6 @@ class AutoRegisterHandlersRegistryTest extends BusTestCase
     /**
      * @covers ::autoRegister
      */
-    public function testMustThrowAnExceptionIfTheParentDoesNotHaveAHandler(): void
-    {
-        $this->handelerLocatorProphecy
-            ->has(Argument::any())
-            ->willReturn(false);
-
-        $this->expectException(InvalidHandler::class);
-
-        $this->instance->autoRegister(FooCallback::class);
-    }
-
-    /**
-     * @covers ::autoRegister
-     */
-    public function testMustThrowAnExceptionIfTheTheHandlerIsNotAValidClass(): void
-    {
-        $this->handelerLocatorProphecy
-            ->has(Argument::any())
-            ->willReturn(true);
-
-        $this->expectException(InvalidHandler::class);
-
-        $this->instance->autoRegister('Foo');
-    }
-
-    /**
-     * @covers ::autoRegister
-     */
     public function testMustThrowAnExceptionIfTheTheHandlerDoesNotHaveTheMethod(): void
     {
         $this->handelerLocatorProphecy
