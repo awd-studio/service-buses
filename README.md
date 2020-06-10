@@ -23,8 +23,10 @@
   - [Command Bus](#command-bus)
   - [Query Bus](#query-bus)
   - [Event Bus](#event-bus)
+- [Subscribe on parents](#subscribe-on-parents)
 - [Services as handlers](#services-as-handlers)
   - [Auto-register services](#auto-register-services)
+  - [Using your own handling methods](#using-your-own-handling-methods)
 - [Passing additional arguments](#passing-additional-arguments)
 - [Define custom bus](#define-custom-bus)
 - [Testing](#testing)
@@ -330,6 +332,36 @@ $bus->handle(new MyEvent());
 ```
 
 
+## Subscribe on parents
+
+The library allows subscribing not only on a certain class, but on all of its parents - either a parent or an implementation from any level.
+```php
+<?php
+
+use AwdStudio\Bus\Handler\ParentsAwareHandlerRegistry;
+use AwdStudio\Bus\Handler\PsrContainerHandlerRegistry;
+use Psr\Container\ContainerInterface;
+
+class MyPsr11Container implements ContainerInterface {}
+
+interface Foo {}
+abstract class Bar {}
+final class Baz extends Bar implements Foo {}
+
+class Handler
+{
+    // You can subscribe on any of level
+    public function __invoke(Foo $message): void {}
+    // ..or
+    public function __invoke(Bar $message): void {}
+    // ..or
+    public function __invoke(Baz $message): void {}
+}
+
+$handlerRegistry = new ParentsAwareHandlerRegistry(new PsrContainerHandlerRegistry(new MyPsr11Container()));
+```
+
+
 ## Services as handlers
 
 Of course, to resolve the only callbacks as handlers is not such a convenient way to build projects. 
@@ -393,28 +425,56 @@ $bus = new class ($handlerRegistry) extends SimpleBus {
 $bus->handle(new \stdClass()); // The handler will be executed
 ```
 
+
 ### Auto-register services
 
-There is even a decorator to register handlers automatically, by the handling type in the `__invoke` method:
+There is even a decorator to subscribe callbacks automatically, by their signature, that supposed to contain a type-hint as the very first parameter.
 ```php
 <?php
 
-use AwdStudio\Bus\Handler\ParentsAwareHandlerRegistry;
+use AwdStudio\Bus\Handler\AutoRegisterHandlersRegistry;
 use AwdStudio\Bus\Handler\PsrContainerHandlerRegistry;
-use Psr\Container\ContainerInterface;
 
-class MyPsr11Container implements ContainerInterface {}
+$psrRegistry = new PsrContainerHandlerRegistry(new  MyPsr11Container());
+$autoRegistry = new AutoRegisterHandlersRegistry($psrRegistry);
 
-class StdClassHandler
-{
-    // The "\stdClass" type-hint allows the registry to register handlers automatically
-    public function __invoke(\stdClass $message): void {}
+// Now, you can add a callback to assign a handler automatically.
+// Just be sure, that it has a correct type-hint of a message that it handles.
+$handler = static function (\stdClass $message): void { };
+$autoRegistry->autoAdd($handler); // It will be called within the stdClass' messages.
+
+// And this is not all it can! 
+// If you use services as handlers - you also can register them automatically. 
+// Suppose we have this handler, that can be resolved from our container:
+class Handler {
+    public function __invoke(\stdClass $message): void { }
 }
 
-$serviceLocator = new MyPsr11Container([StdClassHandler::class]);
-$handlerRegistry = new ParentsAwareHandlerRegistry(new PsrContainerHandlerRegistry($serviceLocator));
+// We can register it like so:
+$autoRegistry->autoRegister(Handler::class);
 
-// That's all.
+// That's all..
+```
+
+
+### Using your own handling methods
+
+If you don't like invokable services, or somehow need to use handlers that handle via different methods - this is not a problem at all. 
+
+Just pass the name of a method while registering: 
+```php
+<?php
+
+use AwdStudio\Bus\Handler\PsrContainerHandlerRegistry;
+
+class Handler {
+    public function handle(\stdClass $message): void { }
+}
+
+// Any registry can manage with it out of the box
+$psrRegistry = new PsrContainerHandlerRegistry(new  MyPsr11Container());
+$psrRegistry->register(\stdClass::class, Handler::class, 'handle');
+// The 3rd argument tells which method is in charge of handling.
 ```
 
 
