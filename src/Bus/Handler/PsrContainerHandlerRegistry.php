@@ -27,8 +27,8 @@ final class PsrContainerHandlerRegistry implements HandlerRegistry
     /**
      * @var array
      *
-     * @psalm-var   array<class-string, array<array-key, string>>
-     * @phpstan-var array<class-string, array<array-key, string>>
+     * @psalm-var   array<class-string, array<string, string>>
+     * @phpstan-var array<class-string, array<string, string>>
      */
     private $containerHandlers;
 
@@ -49,15 +49,15 @@ final class PsrContainerHandlerRegistry implements HandlerRegistry
     /**
      * {@inheritdoc}
      */
-    public function register(string $messageId, string $handlerId): void
+    public function register(string $messageId, string $handlerId, string $handlerMethod = '__invoke'): void
     {
         if (false === $this->serviceLocator->has($handlerId)) {
             throw new InvalidHandler(
-                \sprintf('There is no registered services such a "%s" to handle a "%s" message', $handlerId, $messageId)
+                \sprintf('There is no a service such as "%s" to handle a "%s" message', $handlerId, $messageId)
             );
         }
 
-        $this->containerHandlers[$messageId][] = $handlerId;
+        $this->containerHandlers[$messageId][$handlerId] = $handlerMethod;
     }
 
     /**
@@ -73,7 +73,7 @@ final class PsrContainerHandlerRegistry implements HandlerRegistry
      */
     public function has(string $messageId): bool
     {
-        return $this->dynamicHandlers->has($messageId) || !empty($this->containerHandlers[$messageId]);
+        return $this->dynamicHandlers->has($messageId) || false === empty($this->containerHandlers[$messageId]);
     }
 
     /**
@@ -88,8 +88,9 @@ final class PsrContainerHandlerRegistry implements HandlerRegistry
         }
 
         if (false === empty($this->containerHandlers[$messageId])) {
-            foreach (\array_unique($this->containerHandlers[$messageId]) as $handlerId) {
-                yield $this->serviceLocator->get($handlerId);
+            foreach ($this->containerHandlers[$messageId] as $handlerId => $handlerMethod) {
+                $handler = $this->serviceLocator->get($handlerId);
+                yield '__invoke' === $handlerMethod ? $handler : [$handler, $handlerMethod];
             }
         }
     }

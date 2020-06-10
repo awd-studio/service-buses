@@ -60,7 +60,7 @@ final class ParentsAwareHandlersTest extends BusTestCase
     public function testMustRegisterViaHandlers(): void
     {
         $this->handlersRegistryProphesy
-            ->register(Argument::exact('Foo'), Argument::exact('FooHandler'))
+            ->register(Argument::exact('Foo'), Argument::exact('FooHandler'), Argument::type('string'))
             ->shouldBeCalledOnce();
 
         $this->instance->register('Foo', 'FooHandler');
