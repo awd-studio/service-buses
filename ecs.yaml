@@ -9,3 +9,7 @@ parameters:
         - 'symfony'
         - 'php70'
         - 'php71'
+
+    skip:
+        SlevomatCodingStandard\Sniffs\Variables\UnusedVariableSniff:
+            - 'tests/*'
