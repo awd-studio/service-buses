@@ -16,14 +16,14 @@ final class CallbackMiddlewareChain implements MiddlewareChain
      * @var \AwdStudio\Bus\HandlerLocator
      *
      * @psalm-var   HandlerLocator<callable(object $message, callable $next, mixed ...$extraParams): mixed>
+     *
      * @phpstan-var HandlerLocator<callable(object $message, callable $next, mixed ...$extraParams): mixed>
      */
     private $middleware;
 
     /**
-     * @param \AwdStudio\Bus\HandlerLocator $handlers
-     *
      * @psalm-param   HandlerLocator<callable(object $message, callable $next, mixed ...$extraParams): mixed> $handlers
+     *
      * @phpstan-param HandlerLocator<callable(object $message, callable $next, mixed ...$extraParams): mixed> $handlers
      */
     public function __construct(HandlerLocator $handlers)
@@ -31,17 +31,14 @@ final class CallbackMiddlewareChain implements MiddlewareChain
         $this->middleware = $handlers;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function chain(object $message, callable $handler, array $extraParams = []): callable
     {
-        $next = /** @return mixed */ static function () use ($handler, $message, $extraParams) {
+        $next = static function () use ($handler, $message, $extraParams) {
             return $handler($message, ...$extraParams);
         };
 
         foreach ($this->middleware->get(\get_class($message)) as $item) {
-            $next = /** @return mixed */ static function () use ($item, $message, $next, $extraParams) {
+            $next = static function () use ($item, $message, $next, $extraParams) {
                 return $item($message, $next, ...$extraParams);
             };
         }

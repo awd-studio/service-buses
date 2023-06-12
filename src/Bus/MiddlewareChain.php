@@ -28,9 +28,11 @@ interface MiddlewareChain
      * </code>
      *
      * @psalm-param    callable(object $message, mixed ...$extraParams): mixed $handler
+     *
      * @phpstan-param  callable(object $message, mixed ...$extraParams): mixed $handler
      *
      * @psalm-return   callable(): mixed
+     *
      * @phpstan-return callable(): mixed
      */
     public function chain(object $message, callable $handler, array $extraParams = []): callable;

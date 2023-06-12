@@ -33,12 +33,9 @@ final class MiddlewareBusTest extends BusTestCase
 
         $this->instance = new class($this->handlersProphecy->reveal(), $this->middlewareProphecy->reveal()) extends MiddlewareBus {
             /**
-             * @param object $message
-             * @param mixed  ...$extra
-             *
              * @return iterable<callable>
              */
-            public function test(object $message, ...$extra): iterable
+            public function test(object $message, mixed ...$extra): iterable
             {
                 yield from $this->buildChains($message, ...$extra);
             }

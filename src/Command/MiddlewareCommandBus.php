@@ -12,10 +12,7 @@ use AwdStudio\Bus\MiddlewareBus;
  */
 final class MiddlewareCommandBus extends MiddlewareBus implements CommandBus
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function handle(object $command, ...$extraParams): void
+    public function handle(object $command, mixed ...$extraParams): void
     {
         $chains = $this->buildChains($command, ...$extraParams);
         if (false === $chains->valid()) {

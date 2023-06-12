@@ -56,7 +56,7 @@ class AutoRegisterHandlersRegistryTest extends BusTestCase
      */
     public function testMustBeAbleToConstructWithoutAReader(): void
     {
-        $this->assertNotNull(new  AutoRegisterHandlersRegistry($this->handelerLocatorProphecy->reveal()));
+        $this->assertNotNull(new AutoRegisterHandlersRegistry($this->handelerLocatorProphecy->reveal()));
     }
 
     /**

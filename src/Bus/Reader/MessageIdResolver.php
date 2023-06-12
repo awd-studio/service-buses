@@ -19,6 +19,7 @@ interface MessageIdResolver
      * @throws \AwdStudio\Bus\Exception\ParsingException
      *
      * @psalm-return   class-string
+     *
      * @phpstan-return class-string
      */
     public function read(\ReflectionFunctionAbstract $callback): string;

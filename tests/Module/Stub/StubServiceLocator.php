@@ -12,6 +12,7 @@ final class StubServiceLocator implements ContainerInterface
      * @var array
      *
      * @psalm-var   array<string, object<callable>|false>
+     *
      * @phpstan-var array<string, object<callable>|false>
      */
     private $handlers;
@@ -22,9 +23,8 @@ final class StubServiceLocator implements ContainerInterface
     }
 
     /**
-     * @param string $handler
-     *
      * @psalm-param   class-string<callable> $handler
+     *
      * @phpstan-param class-string<callable> $handler
      */
     public function add(string $handler): void
@@ -32,17 +32,11 @@ final class StubServiceLocator implements ContainerInterface
         $this->handlers[$handler] = false;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function has($id)
     {
         return isset($this->handlers[$id]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function get($id)
     {
         if (false === isset($this->handlers[$id])) {

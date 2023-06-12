@@ -11,10 +11,7 @@ use AwdStudio\Bus\MiddlewareBus;
  */
 final class MiddlewareEventBus extends MiddlewareBus implements EventBus
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function handle(object $event, ...$extraParams): void
+    public function handle(object $event, mixed ...$extraParams): void
     {
         foreach ($this->buildChains($event, ...$extraParams) as $chain) {
             $chain();

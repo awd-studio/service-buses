@@ -16,6 +16,7 @@ final class ParentsAwareHandlerRegistry implements HandlerRegistry
      * @var \AwdStudio\Bus\Handler\HandlerRegistry
      *
      * @psalm-var   HandlerRegistry<callable(object $message, mixed ...$extraParams): mixed>
+     *
      * @phpstan-var HandlerRegistry<callable(object $message, mixed ...$extraParams): mixed>
      */
     private $handlers;
@@ -27,43 +28,35 @@ final class ParentsAwareHandlerRegistry implements HandlerRegistry
      * @var array
      *
      * @psalm-var   array<class-string, class-string[]>
+     *
      * @phpstan-var array<class-string, class-string[]>
      */
     private $parsedMap;
 
     /**
-     * @param \AwdStudio\Bus\Handler\HandlerRegistry            $handlers
-     * @param \AwdStudio\Bus\Registry\ImplementationParser|null $parser
+     * @param \AwdStudio\Bus\Handler\HandlerRegistry $handlers
      *
      * @psalm-param   HandlerRegistry<callable(object $message, mixed ...$extraParams): mixed> $handlers
+     *
      * @phpstan-param HandlerRegistry<callable(object $message, mixed ...$extraParams): mixed> $handlers
      */
-    public function __construct(HandlerRegistry $handlers, ?ImplementationParser $parser = null)
+    public function __construct(HandlerRegistry $handlers, ImplementationParser $parser = null)
     {
         $this->handlers = $handlers;
         $this->parser = $parser ?? new ReflectionImplementationParser();
         $this->parsedMap = [];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function register(string $messageId, string $handlerId, string $handlerMethod = '__invoke'): void
     {
         $this->handlers->register($messageId, $handlerId, $handlerMethod);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function add(string $messageId, callable $handler): void
     {
         $this->handlers->add($messageId, $handler);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function has(string $messageId): bool
     {
         $has = $this->handlers->has($messageId);
@@ -78,9 +71,6 @@ final class ParentsAwareHandlerRegistry implements HandlerRegistry
         return $has;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function get(string $messageId): \Iterator
     {
         foreach (\array_merge([$messageId], $this->parse($messageId)) as $implementation) {
@@ -93,14 +83,12 @@ final class ParentsAwareHandlerRegistry implements HandlerRegistry
     /**
      * Parses and caches the result.
      *
-     * @param string $messageId
-     *
-     * @return array
-     *
      * @psalm-param    class-string $messageId
+     *
      * @phpstan-param  class-string $messageId
      *
      * @psalm-return   class-string[]
+     *
      * @phpstan-return class-string[]
      */
     private function parse(string $messageId): array

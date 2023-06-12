@@ -12,10 +12,7 @@ use AwdStudio\Bus\MiddlewareBus;
  */
 final class MiddlewareQueryBus extends MiddlewareBus implements QueryBus
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function handle(object $query, ...$extraParams)
+    public function handle(object $query, mixed ...$extraParams): mixed
     {
         foreach ($this->buildChains($query, ...$extraParams) as $chain) {
             return $chain();

@@ -23,9 +23,6 @@ interface EventBus
      * A bus also can get additional parameters,
      * that will be passed to the handlers,
      * if they allow to provide them.
-     *
-     * @param object $event
-     * @param mixed  ...$extraParams
      */
-    public function handle(object $event, ...$extraParams): void;
+    public function handle(object $event, mixed ...$extraParams): void;
 }

@@ -42,7 +42,7 @@ class DifferentQuantityOfParametersTest extends BusTestCase
         $middlewareChain = new CallbackMiddlewareChain($this->middlewareRegistry);
 
         $this->instance = new class($this->handlerRegistry, $middlewareChain) extends MiddlewareBus {
-            public function test(object $message, ...$extraParams): \Iterator
+            public function test(object $message, mixed ...$extraParams): \Iterator
             {
                 foreach ($this->buildChains($message, ...$extraParams) as $chain) {
                     yield $chain();
@@ -53,13 +53,14 @@ class DifferentQuantityOfParametersTest extends BusTestCase
 
     /**
      * @covers ::buildChains
+     *
      * @dataProvider argumentsDataProvider
      */
     public function testMustAllowToUseDifferentQuantityOfAcceptableParameters(int ...$arguments): void
     {
         $this->handlerServiceLocator->add(MessageHandler::class);
         $this->handlerRegistry->register(Message::class, MessageHandler::class);
-        $customHandler = static function (Message $message, ?int $foo = null, ?int $bar = null, ?int $baz = null): void {
+        $customHandler = static function (Message $message, int $foo = null, int $bar = null, int $baz = null): void {
             $message->iCallIt('customHandler');
         };
         $this->handlerRegistry->add(Message::class, $customHandler);

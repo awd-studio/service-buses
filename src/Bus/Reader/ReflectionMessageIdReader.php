@@ -11,9 +11,6 @@ use AwdStudio\Bus\Exception\ParsingException;
  */
 final class ReflectionMessageIdReader implements MessageIdResolver
 {
-    /**
-     * {@inheritdoc}
-     */
     public function read(\ReflectionFunctionAbstract $callback): string
     {
         $firstParameter = $callback->getParameters()[0] ?? null;

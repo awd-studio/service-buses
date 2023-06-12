@@ -19,6 +19,7 @@ abstract class MiddlewareBus
      * @var \AwdStudio\Bus\HandlerLocator
      *
      * @psalm-var   HandlerLocator<callable(object $message, mixed ...$extraParams): mixed>
+     *
      * @phpstan-var HandlerLocator<callable(object $message, mixed ...$extraParams): mixed>
      */
     protected $handlers;
@@ -31,6 +32,7 @@ abstract class MiddlewareBus
      * @param \AwdStudio\Bus\MiddlewareChain $middleware
      *
      * @psalm-param   HandlerLocator<callable(object $message, mixed ...$extraParams): mixed> $handlers
+     *
      * @phpstan-param HandlerLocator<callable(object $message, mixed ...$extraParams): mixed> $handlers
      */
     public function __construct(HandlerLocator $handlers, MiddlewareChain $middleware)
@@ -42,15 +44,13 @@ abstract class MiddlewareBus
     /**
      * Handles the message.
      *
-     * @param object $message
-     * @param mixed  ...$extraParams
-     *
      * @return \Iterator<callable>
      *
      * @psalm-return   \Iterator<array-key, callable(): mixed>
+     *
      * @phpstan-return \Iterator<array-key, callable(): mixed>
      */
-    protected function buildChains(object $message, ...$extraParams): \Iterator
+    protected function buildChains(object $message, mixed ...$extraParams): \Iterator
     {
         foreach ($this->handlers->get(\get_class($message)) as $handler) {
             yield $this->middleware->chain($message, $handler, $extraParams);

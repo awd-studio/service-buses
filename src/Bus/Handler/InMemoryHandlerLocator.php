@@ -17,6 +17,7 @@ final class InMemoryHandlerLocator implements HandlerLocator
      * @var array
      *
      * @psalm-var   array<class-string, list<callable(object $message, mixed ...$extraParams): mixed>>
+     *
      * @phpstan-var array<class-string, list<callable(object $message, mixed ...$extraParams): mixed>>
      */
     private $handlers;
@@ -26,25 +27,16 @@ final class InMemoryHandlerLocator implements HandlerLocator
         $this->handlers = [];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function add(string $messageId, callable $handler): void
     {
         $this->handlers[$messageId][] = $handler;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function has(string $messageId): bool
     {
         return !empty($this->handlers[$messageId]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function get(string $messageId): \Iterator
     {
         foreach ($this->handlers[$messageId] ?? [] as $handler) {

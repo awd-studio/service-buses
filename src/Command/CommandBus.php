@@ -22,10 +22,7 @@ interface CommandBus
      * that will be passed to the handlers,
      * if they allow to provide them.
      *
-     * @param object $command
-     * @param mixed  ...$extraParams
-     *
      * @throws \AwdStudio\Bus\Exception\NoHandlerDefined
      */
-    public function handle(object $command, ...$extraParams): void;
+    public function handle(object $command, mixed ...$extraParams): void;
 }

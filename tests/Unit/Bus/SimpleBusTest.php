@@ -27,12 +27,6 @@ final class SimpleBusTest extends BusTestCase
         $this->handlersProphecy = $this->prophesize(HandlerLocator::class);
 
         $this->instance = new class($this->handlersProphecy->reveal()) extends SimpleBus {
-            /**
-             * @param object $message
-             * @param mixed  ...$extraParams
-             *
-             * @return \Iterator
-             */
             public function test(object $message, ...$extraParams): \Iterator
             {
                 foreach ($this->handleAll($message, ...$extraParams) as $result) {

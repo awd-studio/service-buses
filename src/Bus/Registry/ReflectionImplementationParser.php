@@ -6,9 +6,6 @@ namespace AwdStudio\Bus\Registry;
 
 final class ReflectionImplementationParser implements ImplementationParser
 {
-    /**
-     * {@inheritdoc}
-     */
     public function parse(string $messageId): array
     {
         $result = [];

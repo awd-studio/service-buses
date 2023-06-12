@@ -22,12 +22,7 @@ interface QueryBus
      * that will be passed to the handlers,
      * if they allow to provide them.
      *
-     * @param object $query
-     * @param mixed  ...$extraParams
-     *
-     * @return mixed
-     *
      * @throws \AwdStudio\Bus\Exception\NoHandlerDefined
      */
-    public function handle(object $query, ...$extraParams);
+    public function handle(object $query, mixed ...$extraParams): mixed;
 }

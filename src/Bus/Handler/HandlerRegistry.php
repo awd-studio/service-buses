@@ -8,6 +8,7 @@ use AwdStudio\Bus\HandlerLocator;
 
 /**
  * @psalm-template   TCallback of callable
+ *
  * @phpstan-template TCallback of callable
  *
  * @extends HandlerLocator<TCallback>
@@ -24,6 +25,7 @@ interface HandlerRegistry extends HandlerLocator
      * @throws \AwdStudio\Bus\Exception\InvalidHandler
      *
      * @psalm-param   class-string $messageId
+     *
      * @phpstan-param class-string $messageId
      */
     public function register(string $messageId, string $handlerId, string $handlerMethod = '__invoke'): void;
