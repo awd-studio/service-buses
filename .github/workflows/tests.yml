@@ -28,10 +28,10 @@ jobs:
       run: composer validate
         
     - name: Install dependencies
-      run: composer install --prefer-dist --no-progress --no-suggest
+      run: composer install --prefer-dist --no-progress --no-interaction
 
     - name: Install tools
-      run: cd tools/php-cs-fixer && composer install --prefer-dist --no-progress --no-suggest && cd -
+      run: cd tools/php-cs-fixer && composer install --prefer-dist --no-progress --no-interaction && cd -
 
     - name: Testing out
       run: composer test
