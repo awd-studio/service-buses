@@ -1,4 +1,5 @@
-name: Testing service-buses
+name: build
+run-name: Testing and QA  service-buses
 
 on: [push, pull_request]
 

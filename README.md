@@ -2,7 +2,7 @@
 
 ## A simple library, to implement `CQRS`-ish pattern on PHP projects.
 
-[![Build Status](https://travis-ci.org/awd-studio/service-buses.svg?branch=master)](https://travis-ci.org/awd-studio/service-buses)
+![Build status](https://github.com/awd-studio/service-buses/actions/workflows/tests.yml/badge.svg?branch=feature-1)
 [![Coverage Status](https://coveralls.io/repos/github/awd-studio/service-buses/badge.svg?branch=master)](https://coveralls.io/github/awd-studio/service-buses?branch=master)
 
 #### Features:
