@@ -29,6 +29,9 @@ jobs:
         
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress --no-suggest
-      
+
+    - name: Install tools
+      run: cd tools/php-cs-fixer && composer install --prefer-dist --no-progress --no-suggest && cd -
+
     - name: Testing out
       run: composer test
