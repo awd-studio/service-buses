@@ -3,7 +3,7 @@
     "description": "An implementation of such kind of patterns as: Command Bus, Query Bus and Event Bus; in a single package; driven by a Dependency Injection Container",
     "type": "library",
     "require": {
-        "php": ">=7.3",
+        "php": "^8.2",
         "psr/container": "^1.0"
     },
     "require-dev": {
