@@ -32,7 +32,7 @@
 ## Get started:
 
 ### Requirenments:
-- PHP 7.2+
+- PHP 8.2+
 - [PSR-11](https://github.com/php-fig/container) - compatible container (*optional*)
 
 ### Install:
