@@ -6,11 +6,9 @@ $finder = PhpCsFixer\Finder::create()
 
 $config = new PhpCsFixer\Config();
 
-$config->setCacheFile(__DIR__ . '/tools/cache/.php-cs-fixer.cache');
-
-$config->setRules([
-    '@Symfony' => true,
-])
+$config
+    ->setCacheFile(__DIR__ . '/build/cache/php-cs-fixer/.php-cs-fixer.cache')
+    ->setRules(['@Symfony' => true])
     ->setFinder($finder);
 
 return $config;

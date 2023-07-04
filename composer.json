@@ -37,17 +37,26 @@
     ],
     "minimum-stability": "stable",
     "scripts": {
+        "setup-dev": [
+            "mkdir -p build/cache/php-cs-fixer",
+            "mkdir -p build/cache/phpstan",
+            "mkdir -p build/cache/phpunit",
+            "mkdir -p build/cache/psalm",
+            "mkdir -p build/report",
+            "cd tools/php-cs-fixer && composer install --prefer-dist --no-progress --no-interaction && cd -"
+        ],
+        "dev": "@setup-dev",
+        "csf": "tools/php-cs-fixer/vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php",
+        "csf_check": "@csf --dry-run --diff --stop-on-violation",
+        "psalm": "vendor/bin/psalm",
+        "stan": "vendor/bin/phpstan analyse",
+        "unit": "vendor/bin/phpunit",
         "test": [
             "@csf_check",
             "@psalm",
             "@stan",
             "@unit"
-        ],
-        "csf": "tools/php-cs-fixer/vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php",
-        "csf_check": "@csf --dry-run --diff --stop-on-violation",
-        "psalm": "vendor/bin/psalm",
-        "stan": "vendor/bin/phpstan analyse",
-        "unit": "vendor/bin/phpunit"
+        ]
     },
     "keywords": [
         "cqrs",
