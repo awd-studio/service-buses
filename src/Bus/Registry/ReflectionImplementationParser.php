@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace AwdStudio\Bus\Registry;
 
-final class ReflectionImplementationParser implements ImplementationParser
+final readonly class ReflectionImplementationParser implements ImplementationParser
 {
     public function parse(string $messageId): array
     {

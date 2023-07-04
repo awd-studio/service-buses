@@ -8,34 +8,12 @@ use AwdStudio\Bus\Exception\InvalidHandler;
 use AwdStudio\Bus\Reader\MessageIdResolver;
 use AwdStudio\Bus\Reader\ReflectionMessageIdReader;
 
-/**
- * @implements HandlerRegistry<callable(object $message, mixed ...$extraParams): mixed>
- */
-final class AutoRegisterHandlersRegistry implements HandlerRegistry
+final readonly class AutoClassHandlerRegistry implements ClassHandlerRegistry
 {
-    /**
-     * @var \AwdStudio\Bus\Handler\HandlerRegistry
-     *
-     * @psalm-var   HandlerRegistry<callable(object $message, mixed ...$extraParams): mixed>
-     *
-     * @phpstan-var HandlerRegistry<callable(object $message, mixed ...$extraParams): mixed>
-     */
-    private $parent;
-
-    /** @var \AwdStudio\Bus\Reader\MessageIdResolver */
-    private $reader;
-
-    /**
-     * @param \AwdStudio\Bus\Handler\HandlerRegistry $parent
-     *
-     * @psalm-param   HandlerRegistry<callable(object $message, mixed ...$extraParams): mixed> $parent
-     *
-     * @phpstan-param HandlerRegistry<callable(object $message, mixed ...$extraParams): mixed> $parent
-     */
-    public function __construct(HandlerRegistry $parent, MessageIdResolver $reader = null)
-    {
-        $this->parent = $parent;
-        $this->reader = $reader ?? new ReflectionMessageIdReader();
+    public function __construct(
+        private ClassHandlerRegistry $parent,
+        private MessageIdResolver $reader = new ReflectionMessageIdReader()
+    ) {
     }
 
     public function add(string $messageId, callable $handler): void
@@ -53,17 +31,17 @@ final class AutoRegisterHandlersRegistry implements HandlerRegistry
         return $this->parent->get($messageId);
     }
 
-    public function register(string $messageId, string $handlerId, string $handlerMethod = '__invoke'): void
+    public function register(string $messageId, string $handlerClass, string $handlerMethod = '__invoke'): void
     {
-        $this->parent->register($messageId, $handlerId);
+        $this->parent->register($messageId, $handlerClass);
     }
 
     /**
      * Registers a callback as a handler automatically, by the signature of the method in a service.
      *
-     * @psalm-param   callable(object $message, mixed ...$extraParams): mixed $handler
+     * @psalm-param   callable(object $message): mixed $handler
      *
-     * @phpstan-param callable(object $message, mixed ...$extraParams): mixed $handler
+     * @phpstan-param callable(object $message): mixed $handler
      */
     public function autoAdd(callable $handler): void
     {

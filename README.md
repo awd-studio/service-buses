@@ -224,7 +224,7 @@ There are a few predefined buses:
 
 use AwdStudio\Bus\Handler\InMemoryHandlerLocator;
 use AwdStudio\Bus\Middleware\CallbackMiddlewareChain;
-use AwdStudio\Command\MiddlewareCommandBus;
+use AwdStudio\Command\SimpleCommandBus;
 
 class MyCommand {
     // Messages might be any of PHP class.
@@ -245,7 +245,7 @@ $middleware->add(MyCommand::class, static function (MyCommand $command, callable
 });
 $chain = new CallbackMiddlewareChain($middleware);
 
-$bus = new MiddlewareCommandBus($handlers, $chain);
+$bus = new SimpleCommandBus($handlers, $chain);
 
 $bus->handle(new MyCommand());
 ```
@@ -258,7 +258,7 @@ $bus->handle(new MyCommand());
 
 use AwdStudio\Bus\Handler\InMemoryHandlerLocator;
 use AwdStudio\Bus\Middleware\CallbackMiddlewareChain;
-use AwdStudio\Query\MiddlewareQueryBus;
+use AwdStudio\Query\SimpleQueryBus;
 
 class MyQuery {
     // Messages might be any of PHP class.
@@ -283,7 +283,7 @@ $middleware->add(MyQuery::class, static function (MyQuery $query, callable $next
 });
 $chain = new CallbackMiddlewareChain($middleware);
 
-$bus = new MiddlewareQueryBus($handlers, $chain);
+$bus = new SimpleQueryBus($handlers, $chain);
 
 $result = $bus->handle(new MyQuery());
 
@@ -299,7 +299,7 @@ $result = $bus->handle(new MyQuery());
 
 use AwdStudio\Bus\Handler\InMemoryHandlerLocator;
 use AwdStudio\Bus\Middleware\CallbackMiddlewareChain;
-use AwdStudio\Event\MiddlewareEventBus;
+use AwdStudio\Event\SimpleEventBus;
 
 class MyEvent {
     // Messages might be any of PHP class.
@@ -323,7 +323,7 @@ $middleware->add(MyEvent::class, static function (MyEvent $event, callable $next
 });
 $chain = new CallbackMiddlewareChain($middleware);
 
-$bus = new MiddlewareEventBus($subscribers, $chain);
+$bus = new SimpleEventBus($subscribers, $chain);
 
 $bus->handle(new MyEvent());
 
@@ -335,11 +335,12 @@ $bus->handle(new MyEvent());
 ## Subscribe on parents
 
 The library allows subscribing not only on a certain class, but on all of its parents - either a parent or an implementation from any level.
+
 ```php
 <?php
 
-use AwdStudio\Bus\Handler\ParentsAwareHandlerRegistry;
-use AwdStudio\Bus\Handler\PsrContainerHandlerRegistry;
+use AwdStudio\Bus\Handler\ParentsAwareClassHandlerRegistry;
+use AwdStudio\Bus\Handler\PsrContainerClassHandlerRegistry;
 use Psr\Container\ContainerInterface;
 
 class MyPsr11Container implements ContainerInterface {}
@@ -358,7 +359,7 @@ class Handler
     public function __invoke(Baz $message): void {}
 }
 
-$handlerRegistry = new ParentsAwareHandlerRegistry(new PsrContainerHandlerRegistry(new MyPsr11Container()));
+$handlerRegistry = new ParentsAwareClassHandlerRegistry(new PsrContainerClassHandlerRegistry(new MyPsr11Container()));
 ```
 
 
@@ -370,10 +371,11 @@ And, the library provides ability to use those containers as service locators fo
 
 To use it, there is a decorator for a handler-locator, that can be used for registering handlers with just FCQN. 
 As a dependency it accepts any of `Psr\Container\ContainerInterface`, that supposed to resolve handlers.
+
 ```php
 <?php
 
-use AwdStudio\Bus\Handler\PsrContainerHandlerRegistry;
+use AwdStudio\Bus\Handler\PsrContainerClassHandlerRegistry;
 use AwdStudio\Bus\SimpleBus;
 use Psr\Container\ContainerInterface;
 
@@ -406,7 +408,7 @@ class StdClassHandler
 }
 
 $serviceLocator = new MyPsr11Container([StdClassHandler::class]);
-$handlerRegistry = new PsrContainerHandlerRegistry($serviceLocator);
+$handlerRegistry = new PsrContainerClassHandlerRegistry($serviceLocator);
 
 // To assign a handler use a defined method:
 $handlerRegistry->register(\stdClass::class, StdClassHandler::class);
@@ -429,14 +431,15 @@ $bus->handle(new \stdClass()); // The handler will be executed
 ### Auto-register services
 
 There is even a decorator to subscribe callbacks automatically, by their signature, that supposed to contain a type-hint as the very first parameter.
+
 ```php
 <?php
 
-use AwdStudio\Bus\Handler\AutoRegisterHandlersRegistry;
-use AwdStudio\Bus\Handler\PsrContainerHandlerRegistry;
+use AwdStudio\Bus\Handler\AutoRegisterHandlersRegistryClass;
+use AwdStudio\Bus\Handler\PsrContainerClassHandlerRegistry;
 
-$psrRegistry = new PsrContainerHandlerRegistry(new  MyPsr11Container());
-$autoRegistry = new AutoRegisterHandlersRegistry($psrRegistry);
+$psrRegistry = new PsrContainerClassHandlerRegistry(new  MyPsr11Container());
+$autoRegistry = new AutoRegisterHandlersRegistryClass($psrRegistry);
 
 // Now, you can add a callback to assign a handler automatically.
 // Just be sure, that it has a correct type-hint of a message that it handles.
@@ -461,18 +464,19 @@ $autoRegistry->autoRegister(Handler::class);
 
 If you don't like invokable services, or somehow need to use handlers that handle via different methods - this is not a problem at all. 
 
-Just pass the name of a method while registering: 
+Just pass the name of a method while registering:
+
 ```php
 <?php
 
-use AwdStudio\Bus\Handler\PsrContainerHandlerRegistry;
+use AwdStudio\Bus\Handler\PsrContainerClassHandlerRegistry;
 
 class Handler {
     public function handle(\stdClass $message): void { }
 }
 
 // Any registry can manage with it out of the box
-$psrRegistry = new PsrContainerHandlerRegistry(new  MyPsr11Container());
+$psrRegistry = new PsrContainerClassHandlerRegistry(new  MyPsr11Container());
 $psrRegistry->register(\stdClass::class, Handler::class, 'handle');
 // The 3rd argument tells which method is in charge of handling.
 ```
@@ -527,14 +531,14 @@ The SimpleBus provides you an ability to handle messages with only handles.
 ```php
 <?php
 
-use AwdStudio\Bus\MiddlewareBus;
+use AwdStudio\Bus\SimpleBus;
 
-class MyBus extends MiddlewareBus
+class MyBus extends SimpleBus
 {
     public function handle(object $message): string 
     {
         $result = '';
-        foreach ($this->buildChains($message) as $chain) {
+        foreach ($this->handleMessage($message) as $chain) {
             $result .= $chain();
         }
     

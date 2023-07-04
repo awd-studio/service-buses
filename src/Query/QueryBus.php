@@ -24,5 +24,5 @@ interface QueryBus
      *
      * @throws \AwdStudio\Bus\Exception\NoHandlerDefined
      */
-    public function handle(object $query, mixed ...$extraParams): mixed;
+    public function handle(object $query): mixed;
 }

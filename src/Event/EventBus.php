@@ -24,5 +24,5 @@ interface EventBus
      * that will be passed to the handlers,
      * if they allow to provide them.
      */
-    public function handle(object $event, mixed ...$extraParams): void;
+    public function handle(object $event): void;
 }

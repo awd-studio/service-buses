@@ -6,25 +6,12 @@ namespace AwdStudio\Bus\Handler;
 
 use AwdStudio\Bus\HandlerLocator;
 
-/**
- * @psalm-external-mutation-free
- *
- * @implements HandlerLocator<callable(object $message, mixed ...$extraParams): mixed>
- */
 final class InMemoryHandlerLocator implements HandlerLocator
 {
-    /**
-     * @var array
-     *
-     * @psalm-var   array<class-string, list<callable(object $message, mixed ...$extraParams): mixed>>
-     *
-     * @phpstan-var array<class-string, list<callable(object $message, mixed ...$extraParams): mixed>>
-     */
-    private $handlers;
-
-    public function __construct()
-    {
-        $this->handlers = [];
+    public function __construct(
+        /** @phpstan-var array<class-string, list<callable>> */
+        private array $handlers = []
+    ) {
     }
 
     public function add(string $messageId, callable $handler): void

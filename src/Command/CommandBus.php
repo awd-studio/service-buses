@@ -24,5 +24,5 @@ interface CommandBus
      *
      * @throws \AwdStudio\Bus\Exception\NoHandlerDefined
      */
-    public function handle(object $command, mixed ...$extraParams): void;
+    public function handle(object $command): void;
 }

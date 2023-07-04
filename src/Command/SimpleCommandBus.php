@@ -5,20 +5,18 @@ declare(strict_types=1);
 namespace AwdStudio\Command;
 
 use AwdStudio\Bus\Exception\NoHandlerDefined;
-use AwdStudio\Bus\MiddlewareBus;
+use AwdStudio\Bus\SimpleBus;
 
 /**
  * Implements the CommandBus with handling via middleware.
  */
-final class MiddlewareCommandBus extends MiddlewareBus implements CommandBus
+final class SimpleCommandBus extends SimpleBus implements CommandBus
 {
-    public function handle(object $command, mixed ...$extraParams): void
+    public function handle(object $command): void
     {
-        $chains = $this->buildChains($command, ...$extraParams);
+        $chains = $this->handleMessage($command);
         if (false === $chains->valid()) {
             throw new NoHandlerDefined($command);
         }
-
-        ($chains->current())();
     }
 }
