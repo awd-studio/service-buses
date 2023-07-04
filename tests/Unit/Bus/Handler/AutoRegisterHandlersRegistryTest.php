@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace AwdStudio\Tests\Unit\Bus\Handler;
 
 use AwdStudio\Bus\Exception\InvalidHandler;
-use AwdStudio\Bus\Handler\AutoRegisterHandlersRegistry;
-use AwdStudio\Bus\Handler\HandlerRegistry;
+use AwdStudio\Bus\Handler\AutoClassHandlerRegistry;
+use AwdStudio\Bus\Handler\ClassHandlerRegistry;
 use AwdStudio\Bus\Reader\MessageIdResolver;
 use AwdStudio\Tests\BusTestCase;
 use Prophecy\Argument;
+use Prophecy\Prophecy\ObjectProphecy;
 
 class FooCallback
 {
@@ -19,25 +20,22 @@ class FooCallback
 }
 
 /**
- * @coversDefaultClass \AwdStudio\Bus\Handler\AutoRegisterHandlersRegistry
+ * @coversDefaultClass \AwdStudio\Bus\Handler\AutoClassHandlerRegistry
  */
 class AutoRegisterHandlersRegistryTest extends BusTestCase
 {
-    /** @var \AwdStudio\Bus\Handler\AutoRegisterHandlersRegistry */
-    private $instance;
-    /** @var \AwdStudio\Bus\Handler\HandlerRegistry|\Prophecy\Prophecy\ObjectProphecy */
-    private $handelerLocatorProphecy;
-    /** @var \AwdStudio\Bus\Reader\MessageIdResolver|\Prophecy\Prophecy\ObjectProphecy */
-    private $readerProphecy;
+    private AutoClassHandlerRegistry $instance;
+    private ClassHandlerRegistry|ObjectProphecy $handelerLocatorProphecy;
+    private MessageIdResolver|ObjectProphecy $readerProphecy;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->handelerLocatorProphecy = $this->prophesize(HandlerRegistry::class);
+        $this->handelerLocatorProphecy = $this->prophesize(ClassHandlerRegistry::class);
         $this->readerProphecy = $this->prophesize(MessageIdResolver::class);
 
-        $this->instance = new AutoRegisterHandlersRegistry(
+        $this->instance = new AutoClassHandlerRegistry(
             $this->handelerLocatorProphecy->reveal(),
             $this->readerProphecy->reveal()
         );
@@ -48,7 +46,7 @@ class AutoRegisterHandlersRegistryTest extends BusTestCase
      */
     public function testMustImplementAHandlerRegistry(): void
     {
-        $this->assertInstanceOf(HandlerRegistry::class, $this->instance);
+        $this->assertInstanceOf(ClassHandlerRegistry::class, $this->instance);
     }
 
     /**
@@ -56,7 +54,7 @@ class AutoRegisterHandlersRegistryTest extends BusTestCase
      */
     public function testMustBeAbleToConstructWithoutAReader(): void
     {
-        $this->assertNotNull(new  AutoRegisterHandlersRegistry($this->handelerLocatorProphecy->reveal()));
+        $this->assertNotNull(new AutoClassHandlerRegistry($this->handelerLocatorProphecy->reveal()));
     }
 
     /**

@@ -2,23 +2,20 @@
 
 ## A simple library, to implement `CQRS`-ish pattern on PHP projects.
 
-[![Build Status](https://travis-ci.org/awd-studio/service-buses.svg?branch=master)](https://travis-ci.org/awd-studio/service-buses)
+![Build status](https://github.com/awd-studio/service-buses/actions/workflows/tests.yml/badge.svg?branch=feature-1)
 [![Coverage Status](https://coveralls.io/repos/github/awd-studio/service-buses/badge.svg?branch=master)](https://coveralls.io/github/awd-studio/service-buses?branch=master)
 
 #### Features:
 - Neither messages nor handlers don't need to extend or implement any additional abstraction.
-- Supports `middleware` for handlers.
-- A handler (as well as middleware) can be any of `callable` item.
+- A handler can be any of `callable` items.
 - Handlers can subscribe on any of parents or implementations of an event.
 - Contains a decorator to register handles as services handled via `PSR-11`'s container.
 - Contains a decorator to auto-subscribe handlers by a typehint on a message that it handles.
 - Provides ready to go bus patterns such a `Command Bus`, a `Query Bus` and an `Event Bus`.
-- Supports passing additional parameters to the buses to send to handlers.
 
 #### Contents:
 - [Get started](#get-started)
 - [Handling messages](#handling-messages)
-- [Middleware](#middleware)
 - [Predefined buses](#predefined-buses)
   - [Command Bus](#command-bus)
   - [Query Bus](#query-bus)
@@ -27,7 +24,6 @@
 - [Services as handlers](#services-as-handlers)
   - [Auto-register services](#auto-register-services)
   - [Using your own handling methods](#using-your-own-handling-methods)
-- [Passing additional arguments](#passing-additional-arguments)
 - [Define custom bus](#define-custom-bus)
 - [Testing](#testing)
 
@@ -36,7 +32,7 @@
 ## Get started:
 
 ### Requirenments:
-- PHP 7.3+
+- PHP 7.2+
 - [PSR-11](https://github.com/php-fig/container) - compatible container (*optional*)
 
 ### Install:
@@ -131,91 +127,20 @@ $bus->handle(new \stdClass());
 ```
 
 
-## Middleware
-
-Middleware layer is simple list of callbacks, that arranges in a chain and are executed within single handler.
-
-They are very close to handles. 
-A middleware is also a callback, the only difference is that middleware has a bit different signature.
-
-Except the message and additional parameters it accepts another callback, usually it calls `$next`. 
-The rest of signature usually repeats handler's one. 
-
-Each middleware should call this `$next` callback. 
-But, it can rule when to call it, and it is possible to run main logic before or after the main handler.
-
-For example:
-```php
-<?php
-
-class StdClassHandler {
-    public function __invoke(\stdClass $message): void
-    {
-        echo 42;
-    }
-}
-
-class StdClassBeforeMiddleware {
-    public function __invoke(\stdClass $message, callable $next): void
-    {
-        echo 24;
-
-        $next();
-    }
-}
-
-class StdClassAfterMiddleware {
-    public function __invoke(\stdClass $message, callable $next): void
-    {
-        $next();
-
-        echo 69;
-    }
-}
-
-// When a middleware-bus handles a stdClass-message, the order will be such:
-// -> 24
-// -> 42
-// -> 69
-```
-
-If the handler must return some value, middleware have to as well:
-```php
-<?php
-
-class StdClassHandler {
-    public function __invoke(\stdClass $message): int
-    {
-        return 42;
-    }
-}
-
-class StdClassBeforeMiddleware {
-    public function __invoke(\stdClass $message, callable $next): int
-    {
-        $result = $next();
-
-        return $result + 69;
-    }
-}
-
-// The whole result will be 111;
-```
-
 
 ## Predefined buses:
 
 There are a few predefined buses: 
 - `\AwdStudio\Command\CommandBus` *(The Command-bus pattern akka `C` in `CQRS`)*
-  - `\AwdStudio\Command\MiddlewareCommandBus` - Handles a command, within middleware, via single handler.
+  - `\AwdStudio\Command\SimpleCommandBus` - Handles a command, within middleware, via single handler.
   
 
 - `\AwdStudio\Query\QueryBus` *(The Query-bus pattern akka `Q` in `CQRS`)*
-  - `\AwdStudio\Query\MiddlewareQueryBus` - Handles a query, within middleware, via single handler.
+  - `\AwdStudio\Query\SimpleQueryBus` - Handles a query, within middleware, via single handler.
 
 
 - `\AwdStudio\Event\EventBus` *(Observer-subscriber pattern)*
-  - `\AwdStudio\Event\MiddlewareEventBus` - Dispatches an event, to each subscriber (can be `>= 0`), within middleware.
+  - `\AwdStudio\Event\SimpleEventBus` - Dispatches an event, to each subscriber (can be `>= 0`), within middleware.
 
 ### Command-bus:
 
@@ -224,7 +149,7 @@ There are a few predefined buses:
 
 use AwdStudio\Bus\Handler\InMemoryHandlerLocator;
 use AwdStudio\Bus\Middleware\CallbackMiddlewareChain;
-use AwdStudio\Command\MiddlewareCommandBus;
+use AwdStudio\Command\SimpleCommandBus;
 
 class MyCommand {
     // Messages might be any of PHP class.
@@ -243,9 +168,8 @@ $middleware->add(MyCommand::class, static function (MyCommand $command, callable
     $next(); // Just dont forget to call a next callback.
     // Or after...
 });
-$chain = new CallbackMiddlewareChain($middleware);
 
-$bus = new MiddlewareCommandBus($handlers, $chain);
+$bus = new SimpleCommandBus($handlers);
 
 $bus->handle(new MyCommand());
 ```
@@ -258,7 +182,7 @@ $bus->handle(new MyCommand());
 
 use AwdStudio\Bus\Handler\InMemoryHandlerLocator;
 use AwdStudio\Bus\Middleware\CallbackMiddlewareChain;
-use AwdStudio\Query\MiddlewareQueryBus;
+use AwdStudio\Query\SimpleQueryBus;
 
 class MyQuery {
     // Messages might be any of PHP class.
@@ -281,9 +205,7 @@ $middleware->add(MyQuery::class, static function (MyQuery $query, callable $next
     return 'prefix ' . $result . ' suffix';
     // Or after...
 });
-$chain = new CallbackMiddlewareChain($middleware);
-
-$bus = new MiddlewareQueryBus($handlers, $chain);
+$bus = new SimpleQueryBus($handlers);
 
 $result = $bus->handle(new MyQuery());
 
@@ -299,7 +221,7 @@ $result = $bus->handle(new MyQuery());
 
 use AwdStudio\Bus\Handler\InMemoryHandlerLocator;
 use AwdStudio\Bus\Middleware\CallbackMiddlewareChain;
-use AwdStudio\Event\MiddlewareEventBus;
+use AwdStudio\Event\SimpleEventBus;
 
 class MyEvent {
     // Messages might be any of PHP class.
@@ -321,9 +243,7 @@ $middleware->add(MyEvent::class, static function (MyEvent $event, callable $next
     $next(); // Just dont forget to call a next callback.
     // Or after...
 });
-$chain = new CallbackMiddlewareChain($middleware);
-
-$bus = new MiddlewareEventBus($subscribers, $chain);
+$bus = new SimpleEventBus($subscribers);
 
 $bus->handle(new MyEvent());
 
@@ -335,11 +255,12 @@ $bus->handle(new MyEvent());
 ## Subscribe on parents
 
 The library allows subscribing not only on a certain class, but on all of its parents - either a parent or an implementation from any level.
+
 ```php
 <?php
 
-use AwdStudio\Bus\Handler\ParentsAwareHandlerRegistry;
-use AwdStudio\Bus\Handler\PsrContainerHandlerRegistry;
+use AwdStudio\Bus\Handler\ParentsAwareClassHandlerRegistry;
+use AwdStudio\Bus\Handler\PsrContainerClassHandlerRegistry;
 use Psr\Container\ContainerInterface;
 
 class MyPsr11Container implements ContainerInterface {}
@@ -358,7 +279,7 @@ class Handler
     public function __invoke(Baz $message): void {}
 }
 
-$handlerRegistry = new ParentsAwareHandlerRegistry(new PsrContainerHandlerRegistry(new MyPsr11Container()));
+$handlerRegistry = new ParentsAwareClassHandlerRegistry(new PsrContainerClassHandlerRegistry(new MyPsr11Container()));
 ```
 
 
@@ -370,10 +291,11 @@ And, the library provides ability to use those containers as service locators fo
 
 To use it, there is a decorator for a handler-locator, that can be used for registering handlers with just FCQN. 
 As a dependency it accepts any of `Psr\Container\ContainerInterface`, that supposed to resolve handlers.
+
 ```php
 <?php
 
-use AwdStudio\Bus\Handler\PsrContainerHandlerRegistry;
+use AwdStudio\Bus\Handler\PsrContainerClassHandlerRegistry;
 use AwdStudio\Bus\SimpleBus;
 use Psr\Container\ContainerInterface;
 
@@ -406,7 +328,7 @@ class StdClassHandler
 }
 
 $serviceLocator = new MyPsr11Container([StdClassHandler::class]);
-$handlerRegistry = new PsrContainerHandlerRegistry($serviceLocator);
+$handlerRegistry = new PsrContainerClassHandlerRegistry($serviceLocator);
 
 // To assign a handler use a defined method:
 $handlerRegistry->register(\stdClass::class, StdClassHandler::class);
@@ -429,14 +351,15 @@ $bus->handle(new \stdClass()); // The handler will be executed
 ### Auto-register services
 
 There is even a decorator to subscribe callbacks automatically, by their signature, that supposed to contain a type-hint as the very first parameter.
+
 ```php
 <?php
 
-use AwdStudio\Bus\Handler\AutoRegisterHandlersRegistry;
-use AwdStudio\Bus\Handler\PsrContainerHandlerRegistry;
+use AwdStudio\Bus\Handler\AutoRegisterHandlersRegistryClass;
+use AwdStudio\Bus\Handler\PsrContainerClassHandlerRegistry;
 
-$psrRegistry = new PsrContainerHandlerRegistry(new  MyPsr11Container());
-$autoRegistry = new AutoRegisterHandlersRegistry($psrRegistry);
+$psrRegistry = new PsrContainerClassHandlerRegistry(new  MyPsr11Container());
+$autoRegistry = new AutoRegisterHandlersRegistryClass($psrRegistry);
 
 // Now, you can add a callback to assign a handler automatically.
 // Just be sure, that it has a correct type-hint of a message that it handles.
@@ -461,43 +384,23 @@ $autoRegistry->autoRegister(Handler::class);
 
 If you don't like invokable services, or somehow need to use handlers that handle via different methods - this is not a problem at all. 
 
-Just pass the name of a method while registering: 
+Just pass the name of a method while registering:
+
 ```php
 <?php
 
-use AwdStudio\Bus\Handler\PsrContainerHandlerRegistry;
+use AwdStudio\Bus\Handler\PsrContainerClassHandlerRegistry;
 
 class Handler {
     public function handle(\stdClass $message): void { }
 }
 
 // Any registry can manage with it out of the box
-$psrRegistry = new PsrContainerHandlerRegistry(new  MyPsr11Container());
+$psrRegistry = new PsrContainerClassHandlerRegistry(new  MyPsr11Container());
 $psrRegistry->register(\stdClass::class, Handler::class, 'handle');
 // The 3rd argument tells which method is in charge of handling.
 ```
 
-
-## Passing additional arguments
-
-Despite the fact, bus' patterns assume to use the only a message to handle, this library allows passing more than one argument to the bus. 
-It can be useful in cases when you need to rely on some additional context. 
-
-All additional arguments that are passed to the bus will be sent as parameters to each handler and middleware.
-```php
-<?php
-
-$handler1 = static function(\stdClass $message, int $foo): void {};
-$handler2 = static function(\stdClass $message, int $foo, string $bar): void {};
-$handler3 = static function(\stdClass $message, int $foo, string $bar, array $baz): void {};
-
-$middleware1 = static function(\stdClass $message, callable $next): void {};
-$middleware2 = static function(\stdClass $message, callable $next, int $foo): void {};
-$middleware3 = static function(\stdClass $message, callable $next, int $foo, string $bar, array $baz): void {};
-
-// It'd work for all handlers
-$bus->handle(new \stdClass(), 42, 'quu', ['any', 'data', 'you', 'need']);
-```
 
 
 ## Define custom bus
@@ -527,14 +430,14 @@ The SimpleBus provides you an ability to handle messages with only handles.
 ```php
 <?php
 
-use AwdStudio\Bus\MiddlewareBus;
+use AwdStudio\Bus\SimpleBus;
 
-class MyBus extends MiddlewareBus
+class MyBus extends SimpleBus
 {
     public function handle(object $message): string 
     {
         $result = '';
-        foreach ($this->buildChains($message) as $chain) {
+        foreach ($this->handleMessage($message) as $chain) {
             $result .= $chain();
         }
     
@@ -550,5 +453,6 @@ The MiddlewareBus does the same, but it allows wrapping handlers with middleware
 
 ## Testing:
 ```bash
+composer setup-dev
 composer test
 ```

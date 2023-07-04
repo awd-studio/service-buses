@@ -9,14 +9,14 @@ interface ImplementationParser
     /**
      * Returns a list of all implementation of a class.
      *
-     * @param string $messageId
-     *
      * @return string[]
      *
      * @psalm-param    class-string $messageId
+     *
      * @phpstan-param  class-string $messageId
      *
      * @psalm-return   class-string[]
+     *
      * @phpstan-return class-string[]
      */
     public function parse(string $messageId): array;

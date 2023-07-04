@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace AwdStudio\Tests\Unit\Bus\Handler;
 
 use AwdStudio\Bus\Exception\InvalidHandler;
-use AwdStudio\Bus\Handler\PsrContainerHandlerRegistry;
+use AwdStudio\Bus\Handler\PsrContainerClassHandlerRegistry;
 use AwdStudio\Bus\HandlerLocator;
 use AwdStudio\Tests\BusTestCase;
 use Prophecy\Argument;
@@ -47,11 +47,11 @@ class FooHandler3
 }
 
 /**
- * @coversDefaultClass \AwdStudio\Bus\Handler\PsrContainerHandlerRegistry
+ * @coversDefaultClass \AwdStudio\Bus\Handler\PsrContainerClassHandlerRegistry
  */
 final class PsrContainerHandlersTest extends BusTestCase
 {
-    /** @var \AwdStudio\Bus\Handler\PsrContainerHandlerRegistry */
+    /** @var \AwdStudio\Bus\Handler\PsrContainerClassHandlerRegistry */
     private $instance;
 
     /** @var \Prophecy\Prophecy\ObjectProphecy|\Psr\Container\ContainerInterface */
@@ -67,7 +67,7 @@ final class PsrContainerHandlersTest extends BusTestCase
         $this->containerProphecy = $this->prophesize(ContainerInterface::class);
         $this->handlerLocatorProphecy = $this->prophesize(HandlerLocator::class);
 
-        $this->instance = new PsrContainerHandlerRegistry(
+        $this->instance = new PsrContainerClassHandlerRegistry(
             $this->containerProphecy->reveal(),
             $this->handlerLocatorProphecy->reveal()
         );
@@ -86,7 +86,7 @@ final class PsrContainerHandlersTest extends BusTestCase
      */
     public function testMustAllowToInstantiateWithoutExternalHandlers(): void
     {
-        $this->assertNotNull(new PsrContainerHandlerRegistry($this->containerProphecy->reveal()));
+        $this->assertNotNull(new PsrContainerClassHandlerRegistry($this->containerProphecy->reveal()));
     }
 
     /**

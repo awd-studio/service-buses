@@ -14,12 +14,9 @@ interface MessageIdResolver
      *
      * @param \ReflectionFunctionAbstract $callback the callback's reflection
      *
-     * @return string the ID of a message on which a callback should be subscribed on
+     * @return class-string the ID of a message on which a callback should be subscribed on
      *
      * @throws \AwdStudio\Bus\Exception\ParsingException
-     *
-     * @psalm-return   class-string
-     * @phpstan-return class-string
      */
     public function read(\ReflectionFunctionAbstract $callback): string;
 }

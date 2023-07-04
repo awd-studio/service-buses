@@ -9,50 +9,30 @@ namespace AwdStudio\Bus;
  *
  * Provides an interface to arrange handlers via assigning them
  * to certain messages.
- *
- * @psalm-template   TCallback of callable
- * @phpstan-template TCallback of callable
  */
 interface HandlerLocator
 {
     /**
      * Assigns a handler to a particular message.
      *
-     * @param string   $messageId a full qualified class-name of a message
-     * @param callable $handler   a callback that can handle a message
-     *
-     * @psalm-param   class-string $messageId
-     * @phpstan-param class-string $messageId
-     *
-     * @psalm-param   TCallback $handler
-     * @phpstan-param TCallback $handler
+     * @param class-string $messageId a full qualified class-name of a message
+     * @param callable     $handler   a callback that can handle a message
      */
     public function add(string $messageId, callable $handler): void;
 
     /**
      * Checks if there are handlers for particular message.
      *
-     * @param string $messageId a full qualified class-name of a message
-     *
-     * @return bool
-     *
-     * @psalm-param   class-string $messageId
-     * @phpstan-param class-string $messageId
+     * @param class-string $messageId a full qualified class-name of a message
      */
     public function has(string $messageId): bool;
 
     /**
      * Returns a handlers for particular message.
      *
-     * @param string $messageId a full qualified class-name of a message
+     * @param class-string $messageId a full qualified class-name of a message
      *
-     * @return \Iterator<callable>|callable[] the handlers iterator
-     *
-     * @psalm-param    class-string $messageId
-     * @phpstan-param  class-string $messageId
-     *
-     * @psalm-return   \Iterator<array-key, TCallback>
-     * @phpstan-return \Iterator<array-key, TCallback>
+     * @return \Iterator<callable> the handlers iterator
      */
     public function get(string $messageId): \Iterator;
 }

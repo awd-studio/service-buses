@@ -5,20 +5,17 @@ declare(strict_types=1);
 namespace AwdStudio\Tests\Module\MultipleQueryBus;
 
 use AwdStudio\Bus\Handler\InMemoryHandlerLocator;
-use AwdStudio\Bus\Middleware\CallbackMiddlewareChain;
-use AwdStudio\Query\MiddlewareQueryBus;
+use AwdStudio\Query\QueryBus;
+use AwdStudio\Query\SimpleQueryBus;
 use AwdStudio\Tests\BusTestCase;
 
 /**
- * @coversDefaultClass \AwdStudio\Query\MiddlewareQueryBus
+ * @coversDefaultClass \AwdStudio\Query\SimpleQueryBus
  */
 final class MultipleQueryBusTest extends BusTestCase
 {
-    /** @var \AwdStudio\Query\QueryBus */
-    private $instance;
-
-    /** @var \AwdStudio\Bus\Handler\InMemoryHandlerLocator */
-    private $handlerRegistry;
+    private QueryBus $instance;
+    private InMemoryHandlerLocator $handlerRegistry;
 
     protected function setUp(): void
     {
@@ -26,7 +23,7 @@ final class MultipleQueryBusTest extends BusTestCase
 
         $this->handlerRegistry = new InMemoryHandlerLocator();
 
-        $this->instance = new MiddlewareQueryBus($this->handlerRegistry, new CallbackMiddlewareChain(new InMemoryHandlerLocator()));
+        $this->instance = new SimpleQueryBus($this->handlerRegistry);
     }
 
     /**
@@ -50,8 +47,7 @@ final class MultipleQueryBusTest extends BusTestCase
         };
 
         $aggregateServiceHandler = new class($h1, $h2, $h3) {
-            /** @var array */
-            private $handlers;
+            private array $handlers;
 
             public function __construct(callable ...$handlers)
             {

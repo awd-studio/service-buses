@@ -3,19 +3,20 @@
     "description": "An implementation of such kind of patterns as: Command Bus, Query Bus and Event Bus; in a single package; driven by a Dependency Injection Container",
     "type": "library",
     "require": {
-        "php": ">=7.3",
-        "psr/container": "^1.0",
-        "phpspec/prophecy-phpunit": "^2.0"
+        "php": "^8.2",
+        "psr/container": "^1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.0",
-        "phpunit/php-code-coverage": "^8.0",
         "dg/bypass-finals": "^1.1",
-        "phpstan/phpstan": "^0.12",
-        "phpstan/phpstan-phpunit": "^0.12",
         "php-coveralls/php-coveralls": "^2.1",
-        "vimeo/psalm": "^3.4",
-        "symplify/easy-coding-standard": "^8.0"
+        "vimeo/psalm": "^5.0",
+        "phpunit/php-code-coverage": "^9.2",
+        "phpspec/prophecy-phpunit": "^2.0",
+        "phpstan/phpstan": "^1.10",
+        "phpstan/phpstan-phpunit": "^1.3",
+        "psalm/plugin-symfony": "^5.0",
+        "psalm/plugin-phpunit": "^0.18.4"
     },
     "autoload": {
         "psr-4": {
@@ -36,16 +37,26 @@
     ],
     "minimum-stability": "stable",
     "scripts": {
+        "setup-dev": [
+            "mkdir -p build/cache/php-cs-fixer",
+            "mkdir -p build/cache/phpstan",
+            "mkdir -p build/cache/phpunit",
+            "mkdir -p build/cache/psalm",
+            "mkdir -p build/report",
+            "cd tools/php-cs-fixer && composer install --prefer-dist --no-progress --no-interaction && cd -"
+        ],
+        "dev": "@setup-dev",
+        "csf": "tools/php-cs-fixer/vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php",
+        "csf_check": "@csf --dry-run --diff --stop-on-violation",
+        "psalm": "vendor/bin/psalm",
+        "stan": "vendor/bin/phpstan analyse",
+        "unit": "vendor/bin/phpunit",
         "test": [
-            "@ecs",
+            "@csf_check",
             "@psalm",
             "@stan",
             "@unit"
-        ],
-        "ecs": "vendor/bin/ecs check",
-        "psalm": "vendor/bin/psalm",
-        "stan": "vendor/bin/phpstan analyse",
-        "unit": "vendor/bin/phpunit"
+        ]
     },
     "keywords": [
         "cqrs",

@@ -5,34 +5,27 @@ declare(strict_types=1);
 namespace AwdStudio\Tests\Unit\Event;
 
 use AwdStudio\Bus\HandlerLocator;
-use AwdStudio\Bus\MiddlewareChain;
 use AwdStudio\Event\EventBus;
-use AwdStudio\Event\MiddlewareEventBus;
+use AwdStudio\Event\SimpleEventBus;
 use AwdStudio\Tests\BusTestCase;
 use Prophecy\Argument;
+use Prophecy\Prophecy\ObjectProphecy;
 
 /**
- * @coversDefaultClass \AwdStudio\Event\MiddlewareEventBus
+ * @coversDefaultClass \AwdStudio\Event\SimpleEventBus
  */
 final class MiddlewareEventBusTest extends BusTestCase
 {
-    /** @var \AwdStudio\Event\MiddlewareEventBus */
-    private $instance;
-
-    /** @var \AwdStudio\Bus\HandlerLocator|\Prophecy\Prophecy\ObjectProphecy */
-    private $handlersProphecy;
-
-    /** @var \AwdStudio\Bus\MiddlewareChain|\Prophecy\Prophecy\ObjectProphecy */
-    private $middlewareProphecy;
+    private SimpleEventBus $instance;
+    private HandlerLocator|ObjectProphecy $handlersProphecy;
 
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->handlersProphecy = $this->prophesize(HandlerLocator::class);
-        $this->middlewareProphecy = $this->prophesize(MiddlewareChain::class);
 
-        $this->instance = new MiddlewareEventBus($this->handlersProphecy->reveal(), $this->middlewareProphecy->reveal());
+        $this->instance = new SimpleEventBus($this->handlersProphecy->reveal());
     }
 
     /**
@@ -62,22 +55,13 @@ final class MiddlewareEventBusTest extends BusTestCase
     public function testMustApplyASingleHandler(): void
     {
         $message = new class() {
-            /** @var bool */
-            public $isChanged = false;
+            public bool $isChanged = false;
         };
         $handler = static function (object $message): void { $message->isChanged = true; };
 
         $this->handlersProphecy
-            ->has(Argument::exact(\get_class($message)))
-            ->willReturn(true);
-
-        $this->handlersProphecy
-            ->get(Argument::exact(\get_class($message)))
+            ->get(Argument::exact($message::class))
             ->willYield([$handler]);
-
-        $this->middlewareProphecy
-            ->chain(Argument::exact($message), Argument::exact($handler), Argument::type('array'))
-            ->willReturn(static function () use ($message, $handler): void { $handler($message); });
 
         $this->instance->handle($message);
 
@@ -105,20 +89,8 @@ final class MiddlewareEventBusTest extends BusTestCase
         $handler3 = static function (object $message): void { $message->isChanged3 = true; };
 
         $this->handlersProphecy
-            ->has(Argument::exact(\get_class($message)))
-            ->willReturn(true);
-
-        $this->handlersProphecy
-            ->get(Argument::exact(\get_class($message)))
+            ->get(Argument::exact($message::class))
             ->willYield([$handler1, $handler2, $handler3]);
-
-        $this->middlewareProphecy
-            ->chain(Argument::exact($message), Argument::type('callable'), Argument::type('array'))
-            ->willReturn(
-                static function () use ($message, $handler1): void { $handler1($message); },
-                static function () use ($message, $handler2): void { $handler2($message); },
-                static function () use ($message, $handler3): void { $handler3($message); }
-            );
 
         $this->instance->handle($message);
 

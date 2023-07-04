@@ -2,7 +2,4 @@ parameters:
 	level: max
 	paths:
 		- src
-
-	ignoreErrors:
-		- '#PHPDoc tag @template [a-zA-Z0-9]+ for [a-zA-Z0-9\\_\s]+ with bound type callable is not supported\.#'
-		- '#PHPDoc tag @param for parameter [a-zA-Z0-9\$\_]+ with type [a-zA-Z0-9]+ is not subtype of native type callable\.#'
+	tmpDir: build/cache/phpstan

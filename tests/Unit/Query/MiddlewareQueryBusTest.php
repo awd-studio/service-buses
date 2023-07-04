@@ -6,34 +6,27 @@ namespace AwdStudio\Tests\Unit\Query;
 
 use AwdStudio\Bus\Exception\NoHandlerDefined;
 use AwdStudio\Bus\HandlerLocator;
-use AwdStudio\Bus\MiddlewareChain;
-use AwdStudio\Query\MiddlewareQueryBus;
+use AwdStudio\Query\SimpleQueryBus;
 use AwdStudio\Query\QueryBus;
 use AwdStudio\Tests\BusTestCase;
 use Prophecy\Argument;
+use Prophecy\Prophecy\ObjectProphecy;
 
 /**
- * @coversDefaultClass \AwdStudio\Query\MiddlewareQueryBus
+ * @coversDefaultClass \AwdStudio\Query\SimpleQueryBus
  */
 final class MiddlewareQueryBusTest extends BusTestCase
 {
-    /** @var \AwdStudio\Query\MiddlewareQueryBus */
-    private $instance;
-
-    /** @var \AwdStudio\Bus\HandlerLocator|\Prophecy\Prophecy\ObjectProphecy */
-    private $handlersProphecy;
-
-    /** @var \AwdStudio\Bus\MiddlewareChain|\Prophecy\Prophecy\ObjectProphecy */
-    private $middlewareProphecy;
+    private SimpleQueryBus $instance;
+    private HandlerLocator|ObjectProphecy $handlersProphecy;
 
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->handlersProphecy = $this->prophesize(HandlerLocator::class);
-        $this->middlewareProphecy = $this->prophesize(MiddlewareChain::class);
 
-        $this->instance = new MiddlewareQueryBus($this->handlersProphecy->reveal(), $this->middlewareProphecy->reveal());
+        $this->instance = new SimpleQueryBus($this->handlersProphecy->reveal());
     }
 
     /**
@@ -60,12 +53,8 @@ final class MiddlewareQueryBusTest extends BusTestCase
             ->willReturn(true);
 
         $this->handlersProphecy
-            ->get(Argument::exact(\get_class($message)))
+            ->get(Argument::exact($message::class))
             ->willYield([$handler]);
-
-        $this->middlewareProphecy
-            ->chain(Argument::exact($message), Argument::exact($handler), Argument::type('array'))
-            ->willReturn(static function () use ($message, $handler): string { return $handler($message); });
 
         $result = $this->instance->handle($message);
 
@@ -97,19 +86,12 @@ final class MiddlewareQueryBusTest extends BusTestCase
         };
 
         $this->handlersProphecy
-            ->has(Argument::exact(\get_class($message)))
+            ->has(Argument::exact($message::class))
             ->willReturn(true);
 
         $this->handlersProphecy
-            ->get(Argument::exact(\get_class($message)))
+            ->get(Argument::exact($message::class))
             ->willYield([$handler1, $handler2]);
-
-        $this->middlewareProphecy
-            ->chain(Argument::exact($message), Argument::type('callable'), Argument::type('array'))
-            ->willReturn(
-                static function () use ($message, $handler1): int { return $handler1($message); },
-                static function () use ($message, $handler2): int { return $handler2($message); }
-            );
 
         $result = $this->instance->handle($message);
 

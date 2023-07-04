@@ -4,42 +4,30 @@ declare(strict_types=1);
 
 namespace AwdStudio\Bus;
 
+/**
+ * A base implementation of a bus.
+ *
+ * To implement such bus - just extend this one and
+ * add a method with the logic to use chains from here.
+ *
+ * @see \AwdStudio\Bus\HandlerLocator
+ */
 abstract class SimpleBus
 {
-    /**
-     * @var \AwdStudio\Bus\HandlerLocator
-     *
-     * @psalm-var   \AwdStudio\Bus\HandlerLocator<callable(object $message, mixed ...$extraParams): mixed>
-     * @phpstan-var \AwdStudio\Bus\HandlerLocator<callable(object $message, mixed ...$extraParams): mixed>
-     */
-    protected $handlers;
-
-    /**
-     * @param \AwdStudio\Bus\HandlerLocator $handlers
-     *
-     * @psalm-param   \AwdStudio\Bus\HandlerLocator<callable(object $message, mixed ...$extraParams): mixed> $handlers
-     * @phpstan-param \AwdStudio\Bus\HandlerLocator<callable(object $message, mixed ...$extraParams): mixed> $handlers
-     */
-    public function __construct(HandlerLocator $handlers)
-    {
-        $this->handlers = $handlers;
+    public function __construct(
+        protected readonly HandlerLocator $handlers,
+    ) {
     }
 
     /**
-     * Resolves all handlers for a message.
+     * Handles the message.
      *
-     * @param object $message
-     * @param mixed  ...$extraParams
-     *
-     * @return \Iterator<mixed>|mixed[]
-     *
-     * @psalm-return   \Iterator<array-key, mixed>
-     * @phpstan-return \Iterator<array-key, mixed>
+     * @return \Iterator<mixed>
      */
-    protected function handleAll(object $message, ...$extraParams): \Iterator
+    protected function handleMessage(object $message): \Iterator
     {
-        foreach ($this->handlers->get(\get_class($message)) as $handler) {
-            yield $handler($message, ...$extraParams);
+        foreach ($this->handlers->get($message::class) as $handler) {
+            yield $handler($message);
         }
     }
 }

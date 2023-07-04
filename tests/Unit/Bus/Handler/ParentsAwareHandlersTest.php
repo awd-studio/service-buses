@@ -4,22 +4,22 @@ declare(strict_types=1);
 
 namespace AwdStudio\Tests\Unit\Bus\Handler;
 
-use AwdStudio\Bus\Handler\HandlerRegistry;
-use AwdStudio\Bus\Handler\ParentsAwareHandlerRegistry;
+use AwdStudio\Bus\Handler\ClassHandlerRegistry;
+use AwdStudio\Bus\Handler\ParentsAwareClassHandlerRegistry;
 use AwdStudio\Bus\HandlerLocator;
 use AwdStudio\Bus\Registry\ImplementationParser;
 use AwdStudio\Tests\BusTestCase;
 use Prophecy\Argument;
 
 /**
- * @coversDefaultClass \AwdStudio\Bus\Handler\ParentsAwareHandlerRegistry
+ * @coversDefaultClass \AwdStudio\Bus\Handler\ParentsAwareClassHandlerRegistry
  */
 final class ParentsAwareHandlersTest extends BusTestCase
 {
-    /** @var \AwdStudio\Bus\Handler\ParentsAwareHandlerRegistry */
+    /** @var \AwdStudio\Bus\Handler\ParentsAwareClassHandlerRegistry */
     private $instance;
 
-    /** @var \AwdStudio\Bus\Handler\HandlerRegistry|\Prophecy\Prophecy\ObjectProphecy */
+    /** @var \AwdStudio\Bus\Handler\ClassHandlerRegistry|\Prophecy\Prophecy\ObjectProphecy */
     private $handlersRegistryProphesy;
 
     /** @var \AwdStudio\Bus\Registry\ImplementationParser|\Prophecy\Prophecy\ObjectProphecy */
@@ -29,10 +29,10 @@ final class ParentsAwareHandlersTest extends BusTestCase
     {
         parent::setUp();
 
-        $this->handlersRegistryProphesy = $this->prophesize(HandlerRegistry::class);
+        $this->handlersRegistryProphesy = $this->prophesize(ClassHandlerRegistry::class);
         $this->parserProphesy = $this->prophesize(ImplementationParser::class);
 
-        $this->instance = new ParentsAwareHandlerRegistry(
+        $this->instance = new ParentsAwareClassHandlerRegistry(
             $this->handlersRegistryProphesy->reveal(),
             $this->parserProphesy->reveal()
         );
@@ -51,7 +51,7 @@ final class ParentsAwareHandlersTest extends BusTestCase
      */
     public function testMustAllowNotToPassReflector(): void
     {
-        $this->assertNotNull(new ParentsAwareHandlerRegistry($this->handlersRegistryProphesy->reveal()));
+        $this->assertNotNull(new ParentsAwareClassHandlerRegistry($this->handlersRegistryProphesy->reveal()));
     }
 
     /**
