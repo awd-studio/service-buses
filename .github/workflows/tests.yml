@@ -31,7 +31,7 @@ jobs:
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress --no-interaction
 
-    - name: Install tools
+    - name: Prepare development tools
       run: composer setup-dev
 
     - name: Testing out
