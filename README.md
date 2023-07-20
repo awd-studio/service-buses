@@ -2,7 +2,7 @@
 
 ## A simple library, to implement `CQRS`-ish pattern on PHP projects.
 
-![Build status](https://github.com/awd-studio/service-buses/actions/workflows/tests.yml/badge.svg?branch=feature-1)
+![Build status](https://github.com/awd-studio/service-buses/actions/workflows/tests.yml/badge.svg)
 [![Coverage Status](https://coveralls.io/repos/github/awd-studio/service-buses/badge.svg?branch=master)](https://coveralls.io/github/awd-studio/service-buses?branch=master)
 
 #### Features:
@@ -11,7 +11,7 @@
 - Handlers can subscribe on any of parents or implementations of an event.
 - Contains a decorator to register handles as services handled via `PSR-11`'s container.
 - Contains a decorator to auto-subscribe handlers by a typehint on a message that it handles.
-- Provides ready to go bus patterns such a `Command Bus`, a `Query Bus` and an `Event Bus`.
+- Provides ready to go bus patterns such a `Command Bus`, a `Query Bus` and an `Event Bus` implementations.
 
 #### Contents:
 - [Get started](#get-started)
@@ -132,15 +132,15 @@ $bus->handle(new \stdClass());
 
 There are a few predefined buses: 
 - `\AwdStudio\Command\CommandBus` *(The Command-bus pattern akka `C` in `CQRS`)*
-  - `\AwdStudio\Command\SimpleCommandBus` - Handles a command, within middleware, via single handler.
+  - `\AwdStudio\Command\SimpleCommandBus` - Handles a command, via single handler.
   
 
 - `\AwdStudio\Query\QueryBus` *(The Query-bus pattern akka `Q` in `CQRS`)*
-  - `\AwdStudio\Query\SimpleQueryBus` - Handles a query, within middleware, via single handler.
+  - `\AwdStudio\Query\SimpleQueryBus` - Handles a query, via single handler.
 
 
 - `\AwdStudio\Event\EventBus` *(Observer-subscriber pattern)*
-  - `\AwdStudio\Event\SimpleEventBus` - Dispatches an event, to each subscriber (can be `>= 0`), within middleware.
+  - `\AwdStudio\Event\SimpleEventBus` - Dispatches an event, to each subscriber (can be `>= 0`).
 
 ### Command-bus:
 
@@ -148,7 +148,6 @@ There are a few predefined buses:
 <?php
 
 use AwdStudio\Bus\Handler\InMemoryHandlerLocator;
-use AwdStudio\Bus\Middleware\CallbackMiddlewareChain;
 use AwdStudio\Command\SimpleCommandBus;
 
 class MyCommand {
@@ -159,15 +158,6 @@ class MyCommand {
 $handlers = new InMemoryHandlerLocator();
 // Register a handler. It can be any callable thing.
 $handlers->add(MyCommand::class, static function (MyCommand $command): void {});
-
-$middleware = new InMemoryHandlerLocator();
-// Register a middleware. It can be any callable thing as well. 
-// The only thing is that it gets a callback with next middleware as a 2nd param.
-$middleware->add(MyCommand::class, static function (MyCommand $command, callable $next): void {
-    // Do whatever you need before the handler.
-    $next(); // Just dont forget to call a next callback.
-    // Or after...
-});
 
 $bus = new SimpleCommandBus($handlers);
 
@@ -181,7 +171,6 @@ $bus->handle(new MyCommand());
 <?php
 
 use AwdStudio\Bus\Handler\InMemoryHandlerLocator;
-use AwdStudio\Bus\Middleware\CallbackMiddlewareChain;
 use AwdStudio\Query\SimpleQueryBus;
 
 class MyQuery {
@@ -195,16 +184,6 @@ $handlers->add(MyQuery::class, static function (MyQuery $query): string {
     return 'foo';
 });
 
-$middleware = new InMemoryHandlerLocator();
-// Register a middleware. It can be any callable thing as well. 
-// The only thing is that it gets a callback with next middleware as a 2nd param.
-$middleware->add(MyQuery::class, static function (MyQuery $query, callable $next): string {
-    // Do whatever you need before the handler.
-    $result = $next(); // Just dont forget to call a next callback.
-
-    return 'prefix ' . $result . ' suffix';
-    // Or after...
-});
 $bus = new SimpleQueryBus($handlers);
 
 $result = $bus->handle(new MyQuery());
@@ -220,7 +199,6 @@ $result = $bus->handle(new MyQuery());
 <?php
 
 use AwdStudio\Bus\Handler\InMemoryHandlerLocator;
-use AwdStudio\Bus\Middleware\CallbackMiddlewareChain;
 use AwdStudio\Event\SimpleEventBus;
 
 class MyEvent {
@@ -235,20 +213,11 @@ $subscribers->add(MyEvent::class, static function (MyEvent $event): void {});
 // we cah add more of them:
 $subscribers->add(MyEvent::class, static function (MyEvent $event): void {});
 
-$middleware = new InMemoryHandlerLocator();
-// Register a middleware. It can be any callable thing as well. 
-// The only thing is that it gets a callback with next middleware as a 2nd param.
-$middleware->add(MyEvent::class, static function (MyEvent $event, callable $next): void {
-    // Do whatever you need before the handler.
-    $next(); // Just dont forget to call a next callback.
-    // Or after...
-});
 $bus = new SimpleEventBus($subscribers);
 
 $bus->handle(new MyEvent());
 
 // After that, the event is delivered to each subscriber.
-// And each of subscriber is wrapped with all middleware.  
 ```
 
 
@@ -445,7 +414,6 @@ class MyBus extends SimpleBus
     }
 }
 ```
-The MiddlewareBus does the same, but it allows wrapping handlers with middleware.
 
 
 -----
