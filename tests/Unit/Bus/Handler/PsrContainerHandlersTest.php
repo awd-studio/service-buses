@@ -54,22 +54,22 @@ final class PsrContainerHandlersTest extends BusTestCase
     /** @var \AwdStudio\Bus\Handler\PsrContainerClassHandlerRegistry */
     private $instance;
 
-    /** @var \Prophecy\Prophecy\ObjectProphecy|\Psr\Container\ContainerInterface */
-    private $containerProphecy;
+    /** @var \Psr\Container\ContainerInterface|\Prophecy\Prophecy\ObjectProphecy */
+    private $serviceLocator;
 
     /** @var \AwdStudio\Bus\HandlerLocator|\Prophecy\Prophecy\ObjectProphecy */
-    private $handlerLocatorProphecy;
+    private $dynamicHandlers;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->containerProphecy = $this->prophesize(ContainerInterface::class);
-        $this->handlerLocatorProphecy = $this->prophesize(HandlerLocator::class);
+        $this->serviceLocator = $this->prophesize(ContainerInterface::class);
+        $this->dynamicHandlers = $this->prophesize(HandlerLocator::class);
 
         $this->instance = new PsrContainerClassHandlerRegistry(
-            $this->containerProphecy->reveal(),
-            $this->handlerLocatorProphecy->reveal()
+            $this->serviceLocator->reveal(),
+            $this->dynamicHandlers->reveal()
         );
     }
 
@@ -86,7 +86,7 @@ final class PsrContainerHandlersTest extends BusTestCase
      */
     public function testMustAllowToInstantiateWithoutExternalHandlers(): void
     {
-        $this->assertNotNull(new PsrContainerClassHandlerRegistry($this->containerProphecy->reveal()));
+        $this->assertNotNull(new PsrContainerClassHandlerRegistry($this->serviceLocator->reveal()));
     }
 
     /**
@@ -94,7 +94,7 @@ final class PsrContainerHandlersTest extends BusTestCase
      */
     public function testMustCheckAServiceWhenTriesToRegisterIt(): void
     {
-        $this->containerProphecy
+        $this->serviceLocator
             ->has(Argument::exact(FooHandler::class))
             ->willReturn(true)
             ->shouldBeCalledOnce();
@@ -107,7 +107,7 @@ final class PsrContainerHandlersTest extends BusTestCase
      */
     public function testMustThrowAnExceptionIfAHandlerIsNotInTheServiceLocator(): void
     {
-        $this->containerProphecy
+        $this->serviceLocator
             ->has(Argument::exact(FooHandler::class))
             ->willReturn(false);
 
@@ -123,7 +123,7 @@ final class PsrContainerHandlersTest extends BusTestCase
     {
         $dynamicHandler = static function (): void { return; };
 
-        $this->handlerLocatorProphecy
+        $this->dynamicHandlers
             ->add(Argument::exact(\stdClass::class), Argument::exact($dynamicHandler))
             ->shouldBeCalledOnce();
 
@@ -135,7 +135,7 @@ final class PsrContainerHandlersTest extends BusTestCase
      */
     public function testMustCheckAnExternalHandlersWhenLooksForAHandler(): void
     {
-        $this->handlerLocatorProphecy
+        $this->dynamicHandlers
             ->has(Argument::exact(FooCallback::class))
             ->willReturn(false)
             ->shouldBeCalledOnce();
@@ -148,7 +148,7 @@ final class PsrContainerHandlersTest extends BusTestCase
      */
     public function testMustReturnTrueIfAHandlerIsInExternalHandlers(): void
     {
-        $this->handlerLocatorProphecy
+        $this->dynamicHandlers
             ->has(Argument::exact(FooCallback::class))
             ->willReturn(true);
 
@@ -160,11 +160,11 @@ final class PsrContainerHandlersTest extends BusTestCase
      */
     public function testMustReturnTrueIfAHandlerRegisteredInTheContainerHandlers(): void
     {
-        $this->handlerLocatorProphecy
+        $this->dynamicHandlers
             ->has(Argument::exact(FooCallback::class))
             ->willReturn(false);
 
-        $this->containerProphecy
+        $this->serviceLocator
             ->has(Argument::exact(FooHandler::class))
             ->willReturn(true);
 
@@ -178,7 +178,7 @@ final class PsrContainerHandlersTest extends BusTestCase
      */
     public function testMustReturnFalseIfThereAreNoHandlersNorInDynamicHandlersNotInRegisteredOnes(): void
     {
-        $this->handlerLocatorProphecy
+        $this->dynamicHandlers
             ->has(Argument::exact(FooCallback::class))
             ->willReturn(false);
 
@@ -192,11 +192,11 @@ final class PsrContainerHandlersTest extends BusTestCase
     {
         $dynamicHandler = static function (): void { return; };
 
-        $this->handlerLocatorProphecy
+        $this->dynamicHandlers
             ->has(Argument::exact(FooCallback::class))
             ->willReturn(true);
 
-        $this->handlerLocatorProphecy
+        $this->dynamicHandlers
             ->get(Argument::exact(FooCallback::class))
             ->willYield([$dynamicHandler]);
 
@@ -210,15 +210,19 @@ final class PsrContainerHandlersTest extends BusTestCase
     {
         $dynamicHandler = static function (): void { return; };
 
-        $this->instance->register(FooCallback::class, FooHandler::class);
-
-        $this->handlerLocatorProphecy
+        $this->dynamicHandlers
             ->has(Argument::exact(FooCallback::class))
             ->willReturn(false);
 
-        $this->containerProphecy
+        $this->serviceLocator
+            ->has(Argument::exact(FooHandler::class))
+            ->willReturn(true);
+
+        $this->serviceLocator
             ->get(Argument::exact(FooHandler::class))
             ->willReturn($dynamicHandler);
+
+        $this->instance->register(FooCallback::class, FooHandler::class);
 
         $this->assertContains($dynamicHandler, $this->instance->get(FooCallback::class));
     }
@@ -232,20 +236,24 @@ final class PsrContainerHandlersTest extends BusTestCase
         $dynamicHandler2 = static function (): void { return; };
         $dynamicHandler3 = static function (): void { return; };
 
-        $this->instance->register(FooCallback::class, FooHandler1::class);
-        $this->instance->register(FooCallback::class, FooHandler2::class);
-
-        $this->handlerLocatorProphecy
+        $this->dynamicHandlers
             ->has(Argument::exact(FooCallback::class))
             ->willReturn(true);
 
-        $this->handlerLocatorProphecy
+        $this->dynamicHandlers
             ->get(Argument::exact(FooCallback::class))
             ->willYield([$dynamicHandler3]);
 
-        $this->containerProphecy
+        $this->serviceLocator
             ->get(Argument::any())
             ->willReturn($dynamicHandler1, $dynamicHandler2);
+
+        $this->serviceLocator
+            ->has(Argument::any())
+            ->willReturn(true);
+
+        $this->instance->register(FooCallback::class, FooHandler1::class);
+        $this->instance->register(FooCallback::class, FooHandler2::class);
 
         $result = [];
         foreach ($this->instance->get(FooCallback::class) as $handler) {
@@ -262,15 +270,15 @@ final class PsrContainerHandlersTest extends BusTestCase
      */
     public function testMustReturnACallableArrayAsAnObjectAndRegisteredMethod(): void
     {
-        $this->handlerLocatorProphecy
+        $this->dynamicHandlers
             ->has(Argument::any())
             ->willReturn(false);
 
-        $this->containerProphecy
+        $this->serviceLocator
             ->has(Argument::exact(FooHandler3::class))
             ->willReturn(true);
 
-        $this->containerProphecy
+        $this->serviceLocator
             ->get(Argument::exact(FooHandler3::class))
             ->willReturn(new FooHandler3());
 

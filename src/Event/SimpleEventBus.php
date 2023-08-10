@@ -13,6 +13,6 @@ final class SimpleEventBus extends SimpleBus implements EventBus
 {
     public function handle(object $event): void
     {
-        \iterator_to_array($this->handleMessage($event));
+        iterator_to_array($this->handleMessage($event));
     }
 }

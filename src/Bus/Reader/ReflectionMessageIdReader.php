@@ -24,7 +24,7 @@ final readonly class ReflectionMessageIdReader implements MessageIdResolver
         }
 
         $messageId = $messageType->getName();
-        if (false === \class_exists($messageId) && false === \interface_exists($messageId) && false === \enum_exists($messageId)) {
+        if (false === class_exists($messageId) && false === interface_exists($messageId) && false === enum_exists($messageId)) {
             throw new ParsingException('A message ID must represent an existing class.');
         }
 

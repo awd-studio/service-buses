@@ -67,7 +67,7 @@ final readonly class AutoClassHandlerRegistry implements ClassHandlerRegistry
         try {
             $messageId = $this->reader->read($classReflection->getMethod($handlerMethod));
         } catch (\ReflectionException $e) {
-            throw new InvalidHandler(\sprintf('A handler "%s" supposed to have a method "%s" to register automatically.', $handlerId, $handlerMethod));
+            throw new InvalidHandler(sprintf('A handler "%s" supposed to have a method "%s" to register automatically.', $handlerId, $handlerMethod));
         }
 
         $this->parent->register($messageId, $handlerId, $handlerMethod);

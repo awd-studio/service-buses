@@ -24,7 +24,7 @@ final class PsrContainerClassHandlerRegistry implements ClassHandlerRegistry
     public function register(string $messageId, string $handlerClass, string $handlerMethod = '__invoke'): void
     {
         if (false === $this->serviceLocator->has($handlerClass)) {
-            throw new InvalidHandler(\sprintf('There is no a service such as "%s" to handle a "%s" message', $handlerClass, $messageId));
+            throw new InvalidHandler(sprintf('There is no a service such as "%s" to handle a "%s" message', $handlerClass, $messageId));
         }
 
         $this->containerHandlers[$messageId][$handlerClass] = $handlerMethod;
@@ -52,7 +52,7 @@ final class PsrContainerClassHandlerRegistry implements ClassHandlerRegistry
             foreach ($this->containerHandlers[$messageId] as $handlerId => $handlerMethod) {
                 /** @var object $handler */
                 $handler = $this->serviceLocator->get($handlerId);
-                assert(\method_exists($handler, $handlerMethod));
+                \assert(method_exists($handler, $handlerMethod));
                 yield $handler->$handlerMethod(...);
             }
         }
