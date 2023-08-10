@@ -8,6 +8,6 @@ final class NoHandlerDefined extends BusException
 {
     public function __construct(object $message)
     {
-        parent::__construct(\sprintf('No handlers for a message "%s"', $message::class), 1, null);
+        parent::__construct(sprintf('No handlers for a message "%s"', $message::class), 1, null);
     }
 }
